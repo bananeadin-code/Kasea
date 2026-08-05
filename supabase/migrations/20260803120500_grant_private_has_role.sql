@@ -1,0 +1,11 @@
+-- ============================================================================
+-- Fix de permisos: las políticas RLS heredadas de Lovable (Storage, carrusel,
+-- categorías, overrides de imágenes, orden de productos, roles) usan
+-- private.has_role(), pero una migración base le REVOCÓ el permiso de ejecución
+-- a 'authenticated' → daba "permission denied for function has_role" al subir
+-- imágenes o guardar el carrusel/categorías desde el panel.
+--
+-- Concedemos EXECUTE a authenticated. Sigue sin ser accesible por la API REST
+-- porque el esquema 'private' no está expuesto en PostgREST.
+-- ============================================================================
+GRANT EXECUTE ON FUNCTION private.has_role(uuid, public.app_role) TO authenticated;
