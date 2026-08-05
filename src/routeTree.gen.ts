@@ -12,16 +12,17 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TiendaRouteImport } from './routes/tienda'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PersonalizarRouteImport } from './routes/personalizar'
+import { Route as MisPedidosRouteImport } from './routes/mis-pedidos'
 import { Route as MasVendidoRouteImport } from './routes/mas-vendido'
 import { Route as FundasSublimacionRouteImport } from './routes/fundas-sublimacion'
 import { Route as FundasMovilRouteImport } from './routes/fundas-movil'
 import { Route as FundasRouteImport } from './routes/fundas'
 import { Route as FavoritosRouteImport } from './routes/favoritos'
 import { Route as ContactoRouteImport } from './routes/contacto'
-import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CheckoutIndexRouteImport } from './routes/checkout.index'
 import { Route as ProductHandleRouteImport } from './routes/product.$handle'
 import { Route as CheckoutExitoRouteImport } from './routes/checkout.exito'
 import { Route as ApiStripeWebhookRouteImport } from './routes/api.stripe-webhook'
@@ -47,6 +48,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PersonalizarRoute = PersonalizarRouteImport.update({
   id: '/personalizar',
   path: '/personalizar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MisPedidosRoute = MisPedidosRouteImport.update({
+  id: '/mis-pedidos',
+  path: '/mis-pedidos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MasVendidoRoute = MasVendidoRouteImport.update({
@@ -79,11 +85,6 @@ const ContactoRoute = ContactoRouteImport.update({
   path: '/contacto',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -98,15 +99,20 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CheckoutIndexRoute = CheckoutIndexRouteImport.update({
+  id: '/checkout/',
+  path: '/checkout/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ProductHandleRoute = ProductHandleRouteImport.update({
   id: '/product/$handle',
   path: '/product/$handle',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CheckoutExitoRoute = CheckoutExitoRouteImport.update({
-  id: '/exito',
-  path: '/exito',
-  getParentRoute: () => CheckoutRoute,
+  id: '/checkout/exito',
+  path: '/checkout/exito',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiStripeWebhookRoute = ApiStripeWebhookRouteImport.update({
   id: '/api/stripe-webhook',
@@ -163,13 +169,13 @@ const AuthenticatedAdminAjustesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/favoritos': typeof FavoritosRoute
   '/fundas': typeof FundasRoute
   '/fundas-movil': typeof FundasMovilRoute
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
+  '/mis-pedidos': typeof MisPedidosRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
@@ -177,6 +183,7 @@ export interface FileRoutesByFullPath {
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/checkout/exito': typeof CheckoutExitoRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
@@ -188,19 +195,20 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/favoritos': typeof FavoritosRoute
   '/fundas': typeof FundasRoute
   '/fundas-movil': typeof FundasMovilRoute
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
+  '/mis-pedidos': typeof MisPedidosRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/checkout/exito': typeof CheckoutExitoRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/checkout': typeof CheckoutIndexRoute
   '/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
@@ -214,13 +222,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
-  '/checkout': typeof CheckoutRouteWithChildren
   '/contacto': typeof ContactoRoute
   '/favoritos': typeof FavoritosRoute
   '/fundas': typeof FundasRoute
   '/fundas-movil': typeof FundasMovilRoute
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
+  '/mis-pedidos': typeof MisPedidosRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
@@ -228,6 +236,7 @@ export interface FileRoutesById {
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/checkout/exito': typeof CheckoutExitoRoute
   '/product/$handle': typeof ProductHandleRoute
+  '/checkout/': typeof CheckoutIndexRoute
   '/_authenticated/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/_authenticated/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
@@ -241,13 +250,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
-    | '/checkout'
     | '/contacto'
     | '/favoritos'
     | '/fundas'
     | '/fundas-movil'
     | '/fundas-sublimacion'
     | '/mas-vendido'
+    | '/mis-pedidos'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
@@ -255,6 +264,7 @@ export interface FileRouteTypes {
     | '/api/stripe-webhook'
     | '/checkout/exito'
     | '/product/$handle'
+    | '/checkout/'
     | '/admin/ajustes'
     | '/admin/carrusel'
     | '/admin/categorias'
@@ -266,19 +276,20 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
-    | '/checkout'
     | '/contacto'
     | '/favoritos'
     | '/fundas'
     | '/fundas-movil'
     | '/fundas-sublimacion'
     | '/mas-vendido'
+    | '/mis-pedidos'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
     | '/api/stripe-webhook'
     | '/checkout/exito'
     | '/product/$handle'
+    | '/checkout'
     | '/admin/ajustes'
     | '/admin/carrusel'
     | '/admin/categorias'
@@ -291,13 +302,13 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
-    | '/checkout'
     | '/contacto'
     | '/favoritos'
     | '/fundas'
     | '/fundas-movil'
     | '/fundas-sublimacion'
     | '/mas-vendido'
+    | '/mis-pedidos'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
@@ -305,6 +316,7 @@ export interface FileRouteTypes {
     | '/api/stripe-webhook'
     | '/checkout/exito'
     | '/product/$handle'
+    | '/checkout/'
     | '/_authenticated/admin/ajustes'
     | '/_authenticated/admin/carrusel'
     | '/_authenticated/admin/categorias'
@@ -318,18 +330,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
-  CheckoutRoute: typeof CheckoutRouteWithChildren
   ContactoRoute: typeof ContactoRoute
   FavoritosRoute: typeof FavoritosRoute
   FundasRoute: typeof FundasRoute
   FundasMovilRoute: typeof FundasMovilRoute
   FundasSublimacionRoute: typeof FundasSublimacionRoute
   MasVendidoRoute: typeof MasVendidoRoute
+  MisPedidosRoute: typeof MisPedidosRoute
   PersonalizarRoute: typeof PersonalizarRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TiendaRoute: typeof TiendaRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
+  CheckoutExitoRoute: typeof CheckoutExitoRoute
   ProductHandleRoute: typeof ProductHandleRoute
+  CheckoutIndexRoute: typeof CheckoutIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -353,6 +367,13 @@ declare module '@tanstack/react-router' {
       path: '/personalizar'
       fullPath: '/personalizar'
       preLoaderRoute: typeof PersonalizarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/mis-pedidos': {
+      id: '/mis-pedidos'
+      path: '/mis-pedidos'
+      fullPath: '/mis-pedidos'
+      preLoaderRoute: typeof MisPedidosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mas-vendido': {
@@ -397,13 +418,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ContactoRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -425,6 +439,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/checkout/': {
+      id: '/checkout/'
+      path: '/checkout'
+      fullPath: '/checkout/'
+      preLoaderRoute: typeof CheckoutIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/product/$handle': {
       id: '/product/$handle'
       path: '/product/$handle'
@@ -434,10 +455,10 @@ declare module '@tanstack/react-router' {
     }
     '/checkout/exito': {
       id: '/checkout/exito'
-      path: '/exito'
+      path: '/checkout/exito'
       fullPath: '/checkout/exito'
       preLoaderRoute: typeof CheckoutExitoRouteImport
-      parentRoute: typeof CheckoutRoute
+      parentRoute: typeof rootRouteImport
     }
     '/api/stripe-webhook': {
       id: '/api/stripe-webhook'
@@ -539,34 +560,24 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface CheckoutRouteChildren {
-  CheckoutExitoRoute: typeof CheckoutExitoRoute
-}
-
-const CheckoutRouteChildren: CheckoutRouteChildren = {
-  CheckoutExitoRoute: CheckoutExitoRoute,
-}
-
-const CheckoutRouteWithChildren = CheckoutRoute._addFileChildren(
-  CheckoutRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
-  CheckoutRoute: CheckoutRouteWithChildren,
   ContactoRoute: ContactoRoute,
   FavoritosRoute: FavoritosRoute,
   FundasRoute: FundasRoute,
   FundasMovilRoute: FundasMovilRoute,
   FundasSublimacionRoute: FundasSublimacionRoute,
   MasVendidoRoute: MasVendidoRoute,
+  MisPedidosRoute: MisPedidosRoute,
   PersonalizarRoute: PersonalizarRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TiendaRoute: TiendaRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
+  CheckoutExitoRoute: CheckoutExitoRoute,
   ProductHandleRoute: ProductHandleRoute,
+  CheckoutIndexRoute: CheckoutIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

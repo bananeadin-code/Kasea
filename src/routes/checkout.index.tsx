@@ -12,7 +12,7 @@ import { getShopSettingsPublic } from "@/lib/catalog.functions";
 
 type DeliveryMethod = "delivery" | "pickup";
 
-export const Route = createFileRoute("/checkout")({
+export const Route = createFileRoute("/checkout/")({
   head: () => ({
     meta: [
       { title: "Finalizar compra — Kasea Store" },

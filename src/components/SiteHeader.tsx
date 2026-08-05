@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Search, Heart, Menu, X, Shield, LogIn } from "lucide-react";
+import { Search, Heart, Menu, X, Shield, LogIn, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -116,6 +116,9 @@ export function SiteHeader() {
               )}
             </Link>
           </Button>
+          <Button asChild variant="ghost" size="icon" className="rounded-full hover:bg-secondary" aria-label="Mis pedidos">
+            <Link to="/mis-pedidos"><Package className="h-5 w-5" strokeWidth={1.5} /></Link>
+          </Button>
           <Button asChild variant="ghost" size="icon" className="hidden rounded-full hover:bg-secondary sm:inline-flex" aria-label="Iniciar sesión">
             <Link to="/auth"><LogIn className="h-5 w-5" strokeWidth={1.5} /></Link>
           </Button>
@@ -166,6 +169,13 @@ export function SiteHeader() {
               className="py-3 text-sm font-medium tracking-[0.14em] uppercase"
             >
               Favoritos
+            </Link>
+            <Link
+              to="/mis-pedidos"
+              onClick={() => setOpen(false)}
+              className="py-3 text-sm font-medium tracking-[0.14em] uppercase"
+            >
+              Mis pedidos
             </Link>
             <Link
               to="/auth"
