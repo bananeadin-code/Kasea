@@ -69,7 +69,7 @@ export function SiteHeader() {
           <BrandLogo
             priority
             className="pointer-events-auto inline-flex items-center justify-center animate-float"
-            imageClassName="h-14 w-auto max-w-[8rem] object-contain sm:h-20 sm:max-w-[12rem] md:h-24 md:max-w-[14rem] lg:h-28 lg:max-w-[16rem]"
+            imageClassName="h-16 w-auto max-w-[11rem] object-contain sm:h-20 sm:max-w-[12rem] md:h-24 md:max-w-[14rem] lg:h-28 lg:max-w-[16rem]"
           />
         </div>
 
@@ -100,13 +100,13 @@ export function SiteHeader() {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full hover:bg-secondary"
+            className="hidden rounded-full hover:bg-secondary sm:inline-flex"
             aria-label="Buscar"
             onClick={() => setSearchOpen((v) => !v)}
           >
             <Search className="h-5 w-5" strokeWidth={1.5} />
           </Button>
-          <Button asChild variant="ghost" size="icon" className="relative rounded-full hover:bg-secondary" aria-label="Favoritos">
+          <Button asChild variant="ghost" size="icon" className="relative hidden rounded-full hover:bg-secondary sm:inline-flex" aria-label="Favoritos">
             <Link to="/favoritos">
               <Heart className="h-5 w-5" strokeWidth={1.5} />
               {favCount > 0 && (
@@ -116,7 +116,7 @@ export function SiteHeader() {
               )}
             </Link>
           </Button>
-          <Button asChild variant="ghost" size="icon" className="rounded-full hover:bg-secondary" aria-label="Mis pedidos">
+          <Button asChild variant="ghost" size="icon" className="hidden rounded-full hover:bg-secondary sm:inline-flex" aria-label="Mis pedidos">
             <Link to="/mis-pedidos"><Package className="h-5 w-5" strokeWidth={1.5} /></Link>
           </Button>
           <Button asChild variant="ghost" size="icon" className="hidden rounded-full hover:bg-secondary sm:inline-flex" aria-label="Iniciar sesión">
@@ -163,6 +163,16 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setSearchOpen(true);
+              }}
+              className="flex items-center gap-2 py-3 text-left text-sm font-medium tracking-[0.14em] uppercase"
+            >
+              <Search className="h-4 w-4" strokeWidth={1.5} /> Buscar
+            </button>
             <Link
               to="/favoritos"
               onClick={() => setOpen(false)}

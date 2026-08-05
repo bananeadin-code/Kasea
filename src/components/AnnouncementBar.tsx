@@ -1,10 +1,10 @@
-const MESSAGES = [
-  "Envío gratuito en pedidos superiores a 55€",
-];
-
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export function AnnouncementBar() {
-  const loop = [...MESSAGES, ...MESSAGES];
+  const content = useSiteContent();
+  const message = content.announcement_text || "Envío gratuito en pedidos superiores a 55€";
+  // Repetimos el mensaje para que la cinta (marquee) no deje huecos.
+  const loop = [message, message, message];
   return (
     <div className="bg-espresso text-ivory overflow-hidden">
       <div className="flex animate-[marquee_20s_linear_infinite] whitespace-nowrap py-2.5">

@@ -3,8 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Shield, Truck, Lock, Package, ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { listCarouselImagesPublic, applyProductOrder, listProductOrderPublic } from "@/lib/admin.functions";
+import { listCarouselImagesPublic } from "@/lib/admin.functions";
 import { useCategoryImages, pickCategoryImage, type CategorySlug } from "@/hooks/useCategoryImages";
+import { useSiteContent } from "@/hooks/useSiteContent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -150,6 +151,7 @@ function CategoryHighlights() {
 }
 
 function Hero() {
+  const content = useSiteContent();
   return (
     <section className="relative isolate overflow-hidden border-b border-border/60 bg-background">
       {/* Mobile: neutro claro — beige/ivory suave */}
@@ -172,21 +174,23 @@ function Hero() {
           />
           <div className="absolute inset-y-0 left-0 flex w-[46%] items-center justify-center px-3">
             <h1 className="font-display text-[1.45rem] font-semibold leading-[1.12] tracking-[-0.01em] text-foreground text-center [text-shadow:0_1px_8px_rgba(255,255,255,0.9)] xs:text-[1.7rem] sm:text-[2.1rem]">
-              TU MOVIL MERECE<br /><span className="italic font-normal">una funda única</span>
+              {content.hero_title_line1}
+              <br />
+              <span className="italic font-normal">{content.hero_title_line2}</span>
             </h1>
 
           </div>
         </div>
         <div className="container-luxe pb-14 pt-8 text-center">
           <p className="mx-auto max-w-md text-base font-medium leading-relaxed text-foreground/75">
-            En KASEA diseñamos exclusivamente fundas para iPhone. Elige tu modelo y, si no encuentras tu estilo, te lo creamos.
+            {content.hero_intro}
           </p>
           <div className="mt-7 flex justify-center">
             <Link
               to="/mas-vendido"
               className="inline-flex h-12 items-center gap-2 rounded-md bg-black px-7 text-sm font-semibold tracking-[0.14em] text-white uppercase shadow-soft transition-transform duration-300 hover:-translate-y-0.5"
             >
-              Lo más vendido
+              {content.hero_cta}
               <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
             </Link>
           </div>
@@ -214,21 +218,20 @@ function Hero() {
           <div className="max-w-2xl pb-12">
             <p className="eyebrow mt-8">&nbsp;</p>
             <h1 className="mt-4 max-w-3xl font-display text-6xl font-semibold leading-[1.02] tracking-[-0.01em] lg:text-[4.6rem]">
-              TU MOVIL MERECE
-
+              {content.hero_title_line1}
               <br />
-              <span className="italic font-normal">una funda única</span>
+              <span className="italic font-normal">{content.hero_title_line2}</span>
             </h1>
 
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-foreground/72">
-              En KASEA diseñamos exclusivamente fundas para iPhone. Elige tu modelo y, si no encuentras tu estilo, te lo creamos.
+              {content.hero_intro}
             </p>
             <div className="mt-10 flex flex-wrap gap-3">
               <Link
                 to="/mas-vendido"
                 className="inline-flex h-12 items-center gap-2 rounded-md bg-black px-7 text-sm font-medium tracking-[0.14em] text-white uppercase transition-transform duration-300 hover:-translate-y-0.5 hover:opacity-95"
               >
-                Lo más vendido
+                {content.hero_cta}
                 <ArrowRight className="h-4 w-4" strokeWidth={1.5} />
               </Link>
             </div>

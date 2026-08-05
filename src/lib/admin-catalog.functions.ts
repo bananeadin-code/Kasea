@@ -198,11 +198,51 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as AuthedContext;
     await assertAdmin(ctx);
+
+    // Leemos el estado anterior + datos del pedido (para el correo al cliente).
+    const { data: order, error: readErr } = await (ctx.supabase as any)
+      .from("orders")
+      .select(
+        "email, customer_name, currency, total_cents, status, " +
+          "order_items(title, quantity, unit_price_cents, attributes)",
+      )
+      .eq("id", data.id)
+      .maybeSingle();
+    if (readErr) throw new Error(readErr.message);
+
+    const prevStatus = order?.status;
     const { error } = await (ctx.supabase as any)
       .from("orders")
       .update({ status: data.status })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
+
+    // Aviso al cliente al pasar a "enviado" o "entregado" (solo en el cambio).
+    if (
+      order?.email &&
+      data.status !== prevStatus &&
+      (data.status === "fulfilled" || data.status === "delivered")
+    ) {
+      try {
+        const { sendOrderStatusEmail } = await import("@/lib/email");
+        await sendOrderStatusEmail({
+          to: order.email as string,
+          customerName: (order.customer_name as string | null) ?? null,
+          status: data.status,
+          currency: (order.currency as string) || "EUR",
+          totalCents: (order.total_cents as number) ?? 0,
+          items: ((order.order_items ?? []) as any[]).map((it) => ({
+            title: it.title,
+            quantity: it.quantity,
+            unit_price_cents: it.unit_price_cents ?? 0,
+            attributes: Array.isArray(it.attributes) ? it.attributes : [],
+          })),
+        });
+      } catch {
+        /* el correo no debe bloquear el cambio de estado */
+      }
+    }
+
     return { ok: true };
   });
 
@@ -225,6 +265,37 @@ export const purgeDeliveredOrders = createServerFn({ method: "POST" })
       .select("id");
     if (error) throw new Error(error.message);
     return { deleted: ((data ?? []) as any[]).length };
+  });
+
+// -------- Contenido editable de la web (textos por temporada) --------
+export const getSiteContentAdmin = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<Record<string, string>> => {
+    const ctx = context as unknown as AuthedContext;
+    await assertAdmin(ctx);
+    const { data, error } = await (ctx.supabase as any).from("site_content").select("key, value");
+    if (error) throw new Error(error.message);
+    const map: Record<string, string> = {};
+    for (const r of (data ?? []) as any[]) map[r.key] = r.value;
+    return map;
+  });
+
+export const updateSiteContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z
+      .object({ entries: z.array(z.object({ key: z.string().min(1), value: z.string() })) })
+      .parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    const ctx = context as unknown as AuthedContext;
+    await assertAdmin(ctx);
+    const rows = data.entries.map((e) => ({ key: e.key, value: e.value }));
+    const { error } = await (ctx.supabase as any)
+      .from("site_content")
+      .upsert(rows, { onConflict: "key" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 // -------- Ajustes de envío --------

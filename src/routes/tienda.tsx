@@ -4,7 +4,6 @@ import { Package } from "lucide-react";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 
 import { useServerFn } from "@tanstack/react-start";
-import { applyProductOrder, listProductOrderPublic } from "@/lib/admin.functions";
 import { getProductsPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
@@ -54,18 +53,14 @@ function Card({ product }: { product: ShopifyProduct }) {
 }
 
 function ShopPage() {
-  const listOrderFn = useServerFn(listProductOrderPublic);
   const productsFn = useServerFn(getProductsPublic);
-  const { data: rawProducts = [], isLoading } = useQuery({
+  // El orden lo define `products.position` (las flechas del panel de admin).
+  // getProductsPublic ya devuelve los productos ordenados por esa posición.
+  const { data: ordered = [], isLoading } = useQuery({
     queryKey: ["products", "shop"],
     queryFn: async () => (await productsFn()) as ShopifyProduct[],
   });
-  const { data: order = [] } = useQuery({
-    queryKey: ["product-order"],
-    queryFn: () => listOrderFn(),
-  });
   const { q } = Route.useSearch();
-  const ordered = applyProductOrder(rawProducts, order);
   const products = q
     ? ordered.filter((p) => p.node.title.toLowerCase().includes(q.toLowerCase()))
     : ordered;

@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminProductosRouteImport } from './routes/_authenticated/admin.productos'
 import { Route as AuthenticatedAdminPedidosRouteImport } from './routes/_authenticated/admin.pedidos'
 import { Route as AuthenticatedAdminCuentaRouteImport } from './routes/_authenticated/admin.cuenta'
+import { Route as AuthenticatedAdminContenidoRouteImport } from './routes/_authenticated/admin.contenido'
 import { Route as AuthenticatedAdminCategoriasRouteImport } from './routes/_authenticated/admin.categorias'
 import { Route as AuthenticatedAdminCarruselRouteImport } from './routes/_authenticated/admin.carrusel'
 import { Route as AuthenticatedAdminAjustesRouteImport } from './routes/_authenticated/admin.ajustes'
@@ -147,6 +148,12 @@ const AuthenticatedAdminCuentaRoute =
     path: '/cuenta',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminContenidoRoute =
+  AuthenticatedAdminContenidoRouteImport.update({
+    id: '/contenido',
+    path: '/contenido',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminCategoriasRoute =
   AuthenticatedAdminCategoriasRouteImport.update({
     id: '/categorias',
@@ -187,6 +194,7 @@ export interface FileRoutesByFullPath {
   '/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/contenido': typeof AuthenticatedAdminContenidoRoute
   '/admin/cuenta': typeof AuthenticatedAdminCuentaRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
@@ -212,6 +220,7 @@ export interface FileRoutesByTo {
   '/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/admin/contenido': typeof AuthenticatedAdminContenidoRoute
   '/admin/cuenta': typeof AuthenticatedAdminCuentaRoute
   '/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/admin/productos': typeof AuthenticatedAdminProductosRoute
@@ -240,6 +249,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/ajustes': typeof AuthenticatedAdminAjustesRoute
   '/_authenticated/admin/carrusel': typeof AuthenticatedAdminCarruselRoute
   '/_authenticated/admin/categorias': typeof AuthenticatedAdminCategoriasRoute
+  '/_authenticated/admin/contenido': typeof AuthenticatedAdminContenidoRoute
   '/_authenticated/admin/cuenta': typeof AuthenticatedAdminCuentaRoute
   '/_authenticated/admin/pedidos': typeof AuthenticatedAdminPedidosRoute
   '/_authenticated/admin/productos': typeof AuthenticatedAdminProductosRoute
@@ -268,6 +278,7 @@ export interface FileRouteTypes {
     | '/admin/ajustes'
     | '/admin/carrusel'
     | '/admin/categorias'
+    | '/admin/contenido'
     | '/admin/cuenta'
     | '/admin/pedidos'
     | '/admin/productos'
@@ -293,6 +304,7 @@ export interface FileRouteTypes {
     | '/admin/ajustes'
     | '/admin/carrusel'
     | '/admin/categorias'
+    | '/admin/contenido'
     | '/admin/cuenta'
     | '/admin/pedidos'
     | '/admin/productos'
@@ -320,6 +332,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/ajustes'
     | '/_authenticated/admin/carrusel'
     | '/_authenticated/admin/categorias'
+    | '/_authenticated/admin/contenido'
     | '/_authenticated/admin/cuenta'
     | '/_authenticated/admin/pedidos'
     | '/_authenticated/admin/productos'
@@ -502,6 +515,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminCuentaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/contenido': {
+      id: '/_authenticated/admin/contenido'
+      path: '/contenido'
+      fullPath: '/admin/contenido'
+      preLoaderRoute: typeof AuthenticatedAdminContenidoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/categorias': {
       id: '/_authenticated/admin/categorias'
       path: '/categorias'
@@ -530,6 +550,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAjustesRoute: typeof AuthenticatedAdminAjustesRoute
   AuthenticatedAdminCarruselRoute: typeof AuthenticatedAdminCarruselRoute
   AuthenticatedAdminCategoriasRoute: typeof AuthenticatedAdminCategoriasRoute
+  AuthenticatedAdminContenidoRoute: typeof AuthenticatedAdminContenidoRoute
   AuthenticatedAdminCuentaRoute: typeof AuthenticatedAdminCuentaRoute
   AuthenticatedAdminPedidosRoute: typeof AuthenticatedAdminPedidosRoute
   AuthenticatedAdminProductosRoute: typeof AuthenticatedAdminProductosRoute
@@ -540,6 +561,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAjustesRoute: AuthenticatedAdminAjustesRoute,
   AuthenticatedAdminCarruselRoute: AuthenticatedAdminCarruselRoute,
   AuthenticatedAdminCategoriasRoute: AuthenticatedAdminCategoriasRoute,
+  AuthenticatedAdminContenidoRoute: AuthenticatedAdminContenidoRoute,
   AuthenticatedAdminCuentaRoute: AuthenticatedAdminCuentaRoute,
   AuthenticatedAdminPedidosRoute: AuthenticatedAdminPedidosRoute,
   AuthenticatedAdminProductosRoute: AuthenticatedAdminProductosRoute,

@@ -182,3 +182,59 @@ export async function sendAdminOrderNotification(data: AdminOrderEmailData): Pro
   const subject = custom ? "Nueva orden (con diseño personalizado) — Kasea" : "Nueva orden — Kasea Store";
   await sendEmail(data.to, subject, buildAdminHtml(data));
 }
+
+// ---- Aviso al CLIENTE de un cambio de estado (enviado / entregado) ----
+export interface OrderStatusEmailData {
+  to: string;
+  customerName?: string | null;
+  status: "fulfilled" | "delivered";
+  items: OrderEmailItem[];
+  currency: string;
+  totalCents: number;
+}
+
+function buildStatusHtml(data: OrderStatusEmailData): string {
+  const shipped = data.status === "fulfilled";
+  const heading = shipped ? "¡Tu pedido va en camino!" : "¡Tu pedido ha sido entregado!";
+  const message = shipped
+    ? "Hemos preparado y enviado tu pedido. Pronto lo tendrás contigo."
+    : "Nos consta que tu pedido ya ha sido entregado. Esperamos que disfrutes tu funda Kasea.";
+  const rows = data.items
+    .map((it) => {
+      const attrs = (it.attributes ?? [])
+        .filter((a) => !a.value.startsWith("http"))
+        .map((a) => `${escapeHtml(a.key)}: ${escapeHtml(a.value)}`)
+        .join(" · ");
+      return `
+        <tr>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;">
+            ${escapeHtml(it.title)} × ${it.quantity}
+            ${attrs ? `<br><span style="color:#888;font-size:12px">${attrs}</span>` : ""}
+          </td>
+          <td style="padding:8px 0;border-bottom:1px solid #eee;text-align:right;white-space:nowrap;">
+            ${euros(it.unit_price_cents * it.quantity, data.currency)}
+          </td>
+        </tr>`;
+    })
+    .join("");
+
+  return `
+  <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#1a1a1a;">
+    <h1 style="font-size:22px;">${heading}</h1>
+    <p style="color:#555;">${data.customerName ? `${escapeHtml(data.customerName)}, ` : ""}${message}</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;">
+      ${rows}
+      <tr><td style="padding:8px 0;font-weight:bold;">Total</td><td style="padding:8px 0;text-align:right;font-weight:bold;">${euros(data.totalCents, data.currency)}</td></tr>
+    </table>
+    <p style="color:#888;font-size:12px;margin-top:24px;">Kasea Store · Fundas premium para iPhone</p>
+  </div>`;
+}
+
+/** Correo al CLIENTE cuando su pedido pasa a "enviado" o "entregado". */
+export async function sendOrderStatusEmail(data: OrderStatusEmailData): Promise<void> {
+  const subject =
+    data.status === "fulfilled"
+      ? "Tu pedido va en camino — Kasea Store"
+      : "Tu pedido ha sido entregado — Kasea Store";
+  await sendEmail(data.to, subject, buildStatusHtml(data));
+}
