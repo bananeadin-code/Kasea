@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Package, Eye } from "lucide-react";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
-import { applyProductOrder, listProductOrderPublic } from "@/lib/admin.functions";
 import { getCollectionProductsPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
@@ -68,7 +67,6 @@ function ProductCard({ product, collectionHandle }: { product: ShopifyProduct; c
 }
 
 export function CollectionPage({ collectionHandle, eyebrow, title, intro }: Props) {
-  const listOrderFn = useServerFn(listProductOrderPublic);
   const collectionFn = useServerFn(getCollectionProductsPublic);
   const { data, isLoading } = useQuery({
     queryKey: ["collection", collectionHandle],
@@ -78,12 +76,9 @@ export function CollectionPage({ collectionHandle, eyebrow, title, intro }: Prop
     },
   });
 
-  const { data: order = [] } = useQuery({
-    queryKey: ["product-order"],
-    queryFn: () => listOrderFn(),
-  });
-
-  const products = applyProductOrder(data?.products ?? [], order);
+  // El orden lo define products.position (las flechas del panel), ya aplicado
+  // en el servidor por getCollectionProductsPublic.
+  const products = data?.products ?? [];
 
 
   return (

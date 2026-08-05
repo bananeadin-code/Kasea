@@ -215,6 +215,9 @@ export const getCollectionProductsPublic = createServerFn({ method: "GET" })
     const products = ((links ?? []) as unknown as Array<{ products: ProductRow | null }>)
       .map((l) => l.products)
       .filter((p): p is ProductRow => !!p && p.status === "active")
+      // Orden GLOBAL del catálogo (products.position = flechas del panel), para
+      // que la colección se ordene igual que la tienda y el admin.
+      .sort((a, b) => a.position - b.position)
       .map(rowToShopifyProduct);
 
     return { title: col.title, description: col.description ?? "", products };
