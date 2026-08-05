@@ -6,6 +6,7 @@ import { Package, Loader2, ShoppingBag } from "lucide-react";
 import { getOrderBySession } from "@/lib/orders.functions";
 import {
   getStoredOrders,
+  syncStoredOrderStatus,
   statusLabel,
   toneClasses,
   formatCents,
@@ -73,6 +74,12 @@ function OrderRow({ stored }: { stored: StoredOrder }) {
     queryFn: () => getOrder({ data: { sessionId: stored.sessionId } }),
     staleTime: 60_000,
   });
+
+  // Persistimos el último estado conocido para que la purga (entregado +30 días)
+  // funcione aunque el cliente no pase por la página de éxito.
+  useEffect(() => {
+    if (order) syncStoredOrderStatus(stored.sessionId, order.status);
+  }, [order, stored.sessionId]);
 
   const badge = order ? statusLabel(order.status) : null;
   const date = new Date(stored.savedAt).toLocaleDateString("es-ES", {

@@ -188,7 +188,7 @@ export const listOrdersAdmin = createServerFn({ method: "GET" })
     return data ?? [];
   });
 
-const ORDER_STATUSES = ["paid", "fulfilled", "cancelled", "refunded"] as const;
+const ORDER_STATUSES = ["paid", "fulfilled", "delivered", "cancelled", "refunded"] as const;
 
 export const updateOrderStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])

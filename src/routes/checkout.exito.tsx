@@ -70,6 +70,7 @@ function CheckoutSuccessPage() {
         currency: order.currency,
         itemCount: order.items.reduce((s, i) => s + i.quantity, 0),
         firstTitle: order.items[0]?.title ?? "Pedido",
+        status: order.status,
       });
     }
   }, [order, session_id]);

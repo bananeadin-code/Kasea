@@ -14,7 +14,8 @@ export const Route = createFileRoute("/_authenticated/admin/pedidos")({
 
 const STATUS_LABEL: Record<string, string> = {
   paid: "Pagado",
-  fulfilled: "Enviado/Entregado",
+  fulfilled: "Enviado",
+  delivered: "Entregado",
   cancelled: "Cancelado",
   refunded: "Reembolsado",
 };
@@ -41,7 +42,9 @@ function AdminPedidos() {
 
   async function changeStatus(id: string, status: string) {
     try {
-      await statusFn({ data: { id, status: status as "paid" | "fulfilled" | "cancelled" | "refunded" } });
+      await statusFn({
+        data: { id, status: status as "paid" | "fulfilled" | "delivered" | "cancelled" | "refunded" },
+      });
       await qc.invalidateQueries({ queryKey: ["admin-orders"] });
       toast.success("Estado actualizado");
     } catch (e) {

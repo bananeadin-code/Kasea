@@ -14,19 +14,51 @@ export interface StoredOrder {
   currency: string;
   itemCount: number;
   firstTitle: string;
+  status?: string; // último estado conocido (para poder purgar sin consultar)
 }
 
 const KEY = "kasea-orders";
 const MAX = 30;
+const PRUNE_AFTER_MS = 30 * 24 * 60 * 60 * 1000; // 30 días
+
+// Purga pedidos ya ENTREGADOS con más de 30 días: dejan de ser útiles en el
+// historial del cliente. El resto (enviado, pagado, etc.) se conserva.
+function prune(list: StoredOrder[], now: number): StoredOrder[] {
+  return list.filter((o) => !(o.status === "delivered" && now - o.savedAt > PRUNE_AFTER_MS));
+}
 
 export function getStoredOrders(): StoredOrder[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(KEY);
     const arr = raw ? JSON.parse(raw) : [];
-    return Array.isArray(arr) ? (arr as StoredOrder[]) : [];
+    if (!Array.isArray(arr)) return [];
+    const pruned = prune(arr as StoredOrder[], Date.now());
+    if (pruned.length !== arr.length) localStorage.setItem(KEY, JSON.stringify(pruned));
+    return pruned;
   } catch {
     return [];
+  }
+}
+
+// Actualiza el último estado conocido de un pedido en el historial local.
+// Al persistirse, permite que la purga de entregados +30 días funcione aunque
+// el cliente no vuelva a abrir la página de éxito.
+export function syncStoredOrderStatus(sessionId: string, status: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const list = getStoredOrders();
+    let changed = false;
+    const next = list.map((o) => {
+      if (o.sessionId === sessionId && o.status !== status) {
+        changed = true;
+        return { ...o, status };
+      }
+      return o;
+    });
+    if (changed) localStorage.setItem(KEY, JSON.stringify(next));
+  } catch {
+    /* almacenamiento no disponible: se ignora */
   }
 }
 
@@ -54,7 +86,9 @@ export function statusLabel(status: string): { label: string; tone: StatusTone }
     case "paid":
       return { label: "Pago confirmado · preparando tu pedido", tone: "info" };
     case "fulfilled":
-      return { label: "Enviado", tone: "positive" };
+      return { label: "Enviado", tone: "info" };
+    case "delivered":
+      return { label: "Entregado", tone: "positive" };
     case "cancelled":
       return { label: "Cancelado", tone: "negative" };
     case "refunded":
