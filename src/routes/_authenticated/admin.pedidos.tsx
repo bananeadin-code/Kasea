@@ -3,10 +3,11 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Loader2, ChevronDown, Package, Truck, Store, AlertTriangle } from "lucide-react";
+import { Loader2, ChevronDown, Package, Truck, Store, AlertTriangle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/shopify";
-import { listOrdersAdmin, updateOrderStatus } from "@/lib/admin-catalog.functions";
+import { listOrdersAdmin, updateOrderStatus, purgeDeliveredOrders } from "@/lib/admin-catalog.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
   component: AdminPedidos,
@@ -34,11 +35,38 @@ function AdminPedidos() {
   const qc = useQueryClient();
   const listFn = useServerFn(listOrdersAdmin);
   const statusFn = useServerFn(updateOrderStatus);
+  const purgeFn = useServerFn(purgeDeliveredOrders);
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: () => listFn(),
   });
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [purging, setPurging] = useState(false);
+
+  async function purge() {
+    if (
+      !confirm(
+        "¿Borrar del historial los pedidos ENTREGADOS con más de 30 días? Esta acción no se puede deshacer.",
+      )
+    )
+      return;
+    setPurging(true);
+    try {
+      const { deleted } = await purgeFn();
+      await qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success(
+        deleted > 0
+          ? `${deleted} pedido${deleted === 1 ? "" : "s"} eliminado${deleted === 1 ? "" : "s"} del historial`
+          : "No había pedidos entregados de más de 30 días",
+      );
+    } catch (e) {
+      toast.error("No se pudo limpiar el historial", {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    } finally {
+      setPurging(false);
+    }
+  }
 
   async function changeStatus(id: string, status: string) {
     try {
@@ -62,11 +90,22 @@ function AdminPedidos() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h2 className="font-display text-2xl">Pedidos</h2>
-        <p className="text-sm text-muted-foreground">
-          Consulta pedidos, cambia su estado y revisa los diseños personalizados.
-        </p>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-2xl">Pedidos</h2>
+          <p className="text-sm text-muted-foreground">
+            Consulta pedidos, cambia su estado y revisa los diseños personalizados.
+          </p>
+        </div>
+        <Button
+          variant="outline"
+          onClick={purge}
+          disabled={purging}
+          className="gap-2 text-destructive hover:text-destructive"
+        >
+          {purging ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+          Limpiar historial
+        </Button>
       </div>
 
       {orders.length === 0 ? (

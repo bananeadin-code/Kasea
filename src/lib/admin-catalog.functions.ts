@@ -206,6 +206,27 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// -------- Limpieza del historial: pedidos ENTREGADOS con más de 30 días --------
+// Borra de forma permanente los pedidos ya entregados y antiguos (y sus líneas,
+// vía ON DELETE CASCADE). Se hace con la service role porque `orders` no tiene
+// política RLS de DELETE; el candado real es assertAdmin sobre el JWT del admin.
+export const purgeDeliveredOrders = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ deleted: number }> => {
+    const ctx = context as unknown as AuthedContext;
+    await assertAdmin(ctx);
+    const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    const cutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const { data, error } = await (admin as any)
+      .from("orders")
+      .delete()
+      .eq("status", "delivered")
+      .lt("created_at", cutoff)
+      .select("id");
+    if (error) throw new Error(error.message);
+    return { deleted: ((data ?? []) as any[]).length };
+  });
+
 // -------- Ajustes de envío --------
 export const getShopSettingsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
