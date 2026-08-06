@@ -178,12 +178,21 @@ function AdminPedidos() {
                             value={o.status}
                             onChange={(e) => changeStatus(o.id, e.target.value)}
                           >
-                            {Object.entries(STATUS_LABEL).map(([v, l]) => (
-                              <option key={v} value={v}>
-                                {l}
-                              </option>
-                            ))}
+                            {Object.entries(STATUS_LABEL)
+                              // En recogida en tienda no hay "Enviado": el cliente pasa a
+                              // recogerlo, así que el estado útil es "Entregado".
+                              .filter(([v]) => !(o.delivery_method === "pickup" && v === "fulfilled"))
+                              .map(([v, l]) => (
+                                <option key={v} value={v}>
+                                  {l}
+                                </option>
+                              ))}
                           </select>
+                          {o.delivery_method === "pickup" && (
+                            <p className="mt-1 text-xs text-muted-foreground">
+                              Recogida en tienda: marca “Entregado” cuando el cliente lo recoja.
+                            </p>
+                          )}
                         </div>
                       </div>
 
