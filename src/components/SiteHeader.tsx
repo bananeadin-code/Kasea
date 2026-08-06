@@ -57,7 +57,7 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/88 backdrop-blur-xl">
-      <div className="container-luxe relative flex min-h-[6.5rem] items-center justify-between gap-4 py-3 md:min-h-[8.5rem] md:py-4">
+      <div className="container-luxe relative flex min-h-[7.5rem] items-center justify-between gap-4 py-3 md:min-h-[8.5rem] md:py-4">
         <div className="flex items-center gap-2 md:hidden">
           <Button variant="ghost" size="icon" onClick={() => setOpen(!open)} aria-label="Abrir menú">
             {open ? <X className="h-5 w-5" strokeWidth={1.5} /> : <Menu className="h-5 w-5" strokeWidth={1.5} />}
@@ -69,7 +69,7 @@ export function SiteHeader() {
           <BrandLogo
             priority
             className="pointer-events-auto inline-flex items-center justify-center animate-float"
-            imageClassName="h-16 w-auto max-w-[11rem] object-contain sm:h-20 sm:max-w-[12rem] md:h-24 md:max-w-[14rem] lg:h-28 lg:max-w-[16rem]"
+            imageClassName="h-[5.5rem] w-auto max-w-[15rem] object-contain sm:h-[6.75rem] sm:max-w-[16rem] md:h-24 md:max-w-[14rem] lg:h-28 lg:max-w-[16rem]"
           />
         </div>
 
