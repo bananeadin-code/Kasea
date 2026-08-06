@@ -261,6 +261,7 @@ function CheckoutPage() {
                   {formatPrice(total, currency)}
                 </span>
               </div>
+              <p className="text-right text-xs text-muted-foreground">IVA incluido</p>
             </div>
 
             <Button
