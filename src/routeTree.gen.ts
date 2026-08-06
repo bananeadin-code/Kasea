@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TiendaRouteImport } from './routes/tienda'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PersonalizarRouteImport } from './routes/personalizar'
+import { Route as NuevaContrasenaRouteImport } from './routes/nueva-contrasena'
 import { Route as MisPedidosRouteImport } from './routes/mis-pedidos'
 import { Route as MasVendidoRouteImport } from './routes/mas-vendido'
 import { Route as FundasSublimacionRouteImport } from './routes/fundas-sublimacion'
@@ -49,6 +50,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const PersonalizarRoute = PersonalizarRouteImport.update({
   id: '/personalizar',
   path: '/personalizar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NuevaContrasenaRoute = NuevaContrasenaRouteImport.update({
+  id: '/nueva-contrasena',
+  path: '/nueva-contrasena',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MisPedidosRoute = MisPedidosRouteImport.update({
@@ -183,6 +189,7 @@ export interface FileRoutesByFullPath {
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
   '/mis-pedidos': typeof MisPedidosRoute
+  '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
@@ -210,6 +217,7 @@ export interface FileRoutesByTo {
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
   '/mis-pedidos': typeof MisPedidosRoute
+  '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
@@ -238,6 +246,7 @@ export interface FileRoutesById {
   '/fundas-sublimacion': typeof FundasSublimacionRoute
   '/mas-vendido': typeof MasVendidoRoute
   '/mis-pedidos': typeof MisPedidosRoute
+  '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/tienda': typeof TiendaRoute
@@ -267,6 +276,7 @@ export interface FileRouteTypes {
     | '/fundas-sublimacion'
     | '/mas-vendido'
     | '/mis-pedidos'
+    | '/nueva-contrasena'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
@@ -294,6 +304,7 @@ export interface FileRouteTypes {
     | '/fundas-sublimacion'
     | '/mas-vendido'
     | '/mis-pedidos'
+    | '/nueva-contrasena'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
@@ -321,6 +332,7 @@ export interface FileRouteTypes {
     | '/fundas-sublimacion'
     | '/mas-vendido'
     | '/mis-pedidos'
+    | '/nueva-contrasena'
     | '/personalizar'
     | '/sitemap.xml'
     | '/tienda'
@@ -350,6 +362,7 @@ export interface RootRouteChildren {
   FundasSublimacionRoute: typeof FundasSublimacionRoute
   MasVendidoRoute: typeof MasVendidoRoute
   MisPedidosRoute: typeof MisPedidosRoute
+  NuevaContrasenaRoute: typeof NuevaContrasenaRoute
   PersonalizarRoute: typeof PersonalizarRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TiendaRoute: typeof TiendaRoute
@@ -380,6 +393,13 @@ declare module '@tanstack/react-router' {
       path: '/personalizar'
       fullPath: '/personalizar'
       preLoaderRoute: typeof PersonalizarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nueva-contrasena': {
+      id: '/nueva-contrasena'
+      path: '/nueva-contrasena'
+      fullPath: '/nueva-contrasena'
+      preLoaderRoute: typeof NuevaContrasenaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mis-pedidos': {
@@ -593,6 +613,7 @@ const rootRouteChildren: RootRouteChildren = {
   FundasSublimacionRoute: FundasSublimacionRoute,
   MasVendidoRoute: MasVendidoRoute,
   MisPedidosRoute: MisPedidosRoute,
+  NuevaContrasenaRoute: NuevaContrasenaRoute,
   PersonalizarRoute: PersonalizarRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TiendaRoute: TiendaRoute,

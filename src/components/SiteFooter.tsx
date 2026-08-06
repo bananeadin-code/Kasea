@@ -57,6 +57,7 @@ export function SiteFooter() {
           <p>© {new Date().getFullYear()} Kasea Store. Todos los derechos reservados.</p>
           <p className="flex items-center gap-3">
             <span>Fundas premium para iPhone · Hecho en España</span>
+            <Link to="/auth" search={{ registro: "1" }} className="opacity-50 hover:opacity-100 hover:text-foreground">Crear cuenta</Link>
             <Link to="/admin" className="opacity-50 hover:opacity-100 hover:text-foreground">Admin</Link>
           </p>
         </div>
