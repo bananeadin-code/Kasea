@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Image, Package, LayoutGrid, ArrowRight, Receipt, Settings, UserCog } from "lucide-react";
+import { Image, Package, LayoutGrid, ArrowRight, Receipt, Settings, UserCog, Type } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: AdminIndex,
@@ -23,6 +23,12 @@ const CARDS = [
     icon: Settings,
     title: "Ajustes de envío",
     text: "Configura la tarifa de envío y el umbral de envío gratis.",
+  },
+  {
+    to: "/admin/contenido" as const,
+    icon: Type,
+    title: "Textos de la web",
+    text: "Edita la barra de anuncio y los textos de la portada (temporadas, campañas).",
   },
   {
     to: "/admin/carrusel" as const,

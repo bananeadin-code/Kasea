@@ -1,8 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
 
 const BUCKET = "site-images";
-const SIGN_EXPIRY = 60 * 60 * 24 * 365; // 1 year
 
+// Imágenes de tienda (productos, carrusel, categorías): se guardan con URL
+// PÚBLICA PERMANENTE. Requiere que el bucket `site-images` sea público en
+// Supabase. Antes se usaban URLs firmadas que caducaban al año (se rompían).
 export async function uploadImage(file: File, folder: "carousel" | "products" | "categories"): Promise<string> {
   const ext = file.name.split(".").pop() || "jpg";
   const path = `${folder}/${crypto.randomUUID()}.${ext}`;
@@ -12,11 +14,9 @@ export async function uploadImage(file: File, folder: "carousel" | "products" | 
     contentType: file.type,
   });
   if (error) throw new Error(error.message);
-  const { data, error: signErr } = await supabase.storage
-    .from(BUCKET)
-    .createSignedUrl(path, SIGN_EXPIRY);
-  if (signErr || !data) throw new Error(signErr?.message ?? "Signed URL failed");
-  return data.signedUrl;
+  // URL pública permanente (no caduca). El bucket debe ser público.
+  const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  return data.publicUrl;
 }
 
 export async function pickFile(): Promise<File | null> {

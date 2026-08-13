@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Package, Eye } from "lucide-react";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
-import { getCollectionProductsPublic } from "@/lib/catalog.functions";
+import { getCollectionProductsPublic, getProductsPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
 
 interface Props {
@@ -11,6 +11,10 @@ interface Props {
   eyebrow: string;
   title: string;
   intro: string;
+  // "all" = muestra TODO el catálogo activo (recomendado con una sola colección:
+  // así los productos nuevos del panel aparecen siempre, sin depender de enlaces
+  // de colección). "collection" = solo los productos enlazados a la colección.
+  source?: "collection" | "all";
 }
 
 function ProductCard({ product, collectionHandle }: { product: ShopifyProduct; collectionHandle: string }) {
@@ -66,18 +70,25 @@ function ProductCard({ product, collectionHandle }: { product: ShopifyProduct; c
   );
 }
 
-export function CollectionPage({ collectionHandle, eyebrow, title, intro }: Props) {
+export function CollectionPage({ collectionHandle, eyebrow, title, intro, source = "collection" }: Props) {
   const collectionFn = useServerFn(getCollectionProductsPublic);
+  const allFn = useServerFn(getProductsPublic);
   const { data, isLoading } = useQuery({
-    queryKey: ["collection", collectionHandle],
+    queryKey: source === "all" ? ["products", "collectionpage-all"] : ["collection", collectionHandle],
     queryFn: async () => {
+      if (source === "all") {
+        // Todo el catálogo activo (mismos productos que /tienda, ordenados por
+        // products.position). Garantiza que lo que subes en el panel aparece aquí.
+        const products = (await allFn()) as ShopifyProduct[];
+        return { products, missing: products.length === 0 };
+      }
       const res = await collectionFn({ data: { handle: collectionHandle } });
       return { products: res.products as ShopifyProduct[], missing: res.products.length === 0 };
     },
   });
 
-  // El orden lo define products.position (las flechas del panel), ya aplicado
-  // en el servidor por getCollectionProductsPublic.
+  // El orden lo define products.position (las flechas del panel), ya aplicado en
+  // el servidor tanto por getProductsPublic como por getCollectionProductsPublic.
   const products = data?.products ?? [];
 
 

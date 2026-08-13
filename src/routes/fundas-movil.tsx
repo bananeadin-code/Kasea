@@ -53,14 +53,6 @@ interface FundaNode extends ShopifyProduct {
   };
 }
 
-// Solo fundas: filtra por tag/colección "funda"/"sublimacion".
-function isFunda(p: ShopifyProduct): boolean {
-  const tags = (p.node.tags ?? []).join(" ").toLowerCase();
-  const cols = (p.node.collections?.edges ?? []).map((c) => c.node.handle).join(" ").toLowerCase();
-  const hay = `${tags} ${cols} ${p.node.handle}`.toLowerCase();
-  return /funda|sublim|case/.test(hay);
-}
-
 // Ordenación en cliente (Supabase reemplaza el sortKey de Shopify).
 function sortFundas(products: FundaNode[], sort: SortKey): FundaNode[] {
   const price = (p: FundaNode) => parseFloat(p.node.priceRange.minVariantPrice.amount);
@@ -88,7 +80,9 @@ function FundasPage() {
     queryKey: ["fundas", sort],
     queryFn: async () => {
       const all = (await productsFn()) as FundaNode[];
-      return sortFundas(all.filter(isFunda), sort);
+      // La tienda vende solo fundas → mostramos todo el catálogo activo (sin
+      // filtros por tag/colección que ocultarían productos nuevos del panel).
+      return sortFundas(all, sort);
     },
   });
 
