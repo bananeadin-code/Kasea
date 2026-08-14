@@ -3,18 +3,18 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Loader2, ChevronDown, Package, Truck, Store, AlertTriangle, Trash2 } from "lucide-react";
+import { Loader2, ChevronDown, Package, Truck, Store, AlertTriangle, Trash2, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/shopify";
-import { listOrdersAdmin, updateOrderStatus, purgeDeliveredOrders } from "@/lib/admin-catalog.functions";
+import { listOrdersAdmin, updateOrderStatus, purgeDeliveredOrders, markOrderPaid } from "@/lib/admin-catalog.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/pedidos")({
   component: AdminPedidos,
 });
 
 const STATUS_LABEL: Record<string, string> = {
-  paid: "Pagado",
+  paid: "En preparación",
   fulfilled: "Enviado",
   delivered: "Entregado",
   cancelled: "Cancelado",
@@ -36,6 +36,7 @@ function AdminPedidos() {
   const listFn = useServerFn(listOrdersAdmin);
   const statusFn = useServerFn(updateOrderStatus);
   const purgeFn = useServerFn(purgeDeliveredOrders);
+  const markPaidFn = useServerFn(markOrderPaid);
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: () => listFn(),
@@ -77,6 +78,18 @@ function AdminPedidos() {
       toast.success("Estado actualizado");
     } catch (e) {
       toast.error("No se pudo actualizar", { description: e instanceof Error ? e.message : undefined });
+    }
+  }
+
+  async function markPaid(id: string) {
+    try {
+      await markPaidFn({ data: { id } });
+      await qc.invalidateQueries({ queryKey: ["admin-orders"] });
+      toast.success("Cobro en efectivo registrado");
+    } catch (e) {
+      toast.error("No se pudo registrar el cobro", {
+        description: e instanceof Error ? e.message : undefined,
+      });
     }
   }
 
@@ -146,6 +159,15 @@ function AdminPedidos() {
                     <span className="tabular-nums font-medium">
                       {formatPrice((o.total_cents ?? 0) / 100, o.currency || "EUR")}
                     </span>
+                    {o.payment_status === "pending" ? (
+                      <span className="rounded bg-amber-100 px-2 py-0.5 text-xs text-amber-800">
+                        Efectivo · Pendiente
+                      </span>
+                    ) : o.payment_method === "cash" ? (
+                      <span className="rounded bg-green-100 px-2 py-0.5 text-xs text-green-800">
+                        Efectivo · Pagado
+                      </span>
+                    ) : null}
                     <span className="rounded bg-secondary px-2 py-0.5 text-xs">
                       {STATUS_LABEL[o.status] ?? o.status}
                     </span>
@@ -192,6 +214,21 @@ function AdminPedidos() {
                             <p className="mt-1 text-xs text-muted-foreground">
                               Recogida en tienda: marca “Entregado” cuando el cliente lo recoja.
                             </p>
+                          )}
+                        </div>
+
+                        {/* Pago: método + estado, con botón para registrar el cobro en efectivo. */}
+                        <div className="mt-4">
+                          <label className="text-xs text-muted-foreground">Pago</label>
+                          <p className="mt-1 font-medium">
+                            {o.payment_method === "cash" ? "Efectivo en tienda" : "Tarjeta (Stripe)"} ·{" "}
+                            {o.payment_status === "pending" ? "Pendiente de cobro" : "Pagado"}
+                          </p>
+                          {o.payment_status === "pending" && (
+                            <Button size="sm" className="mt-2 gap-2" onClick={() => markPaid(o.id)}>
+                              <Banknote className="h-4 w-4" /> Marcar como cobrado (
+                              {formatPrice((o.total_cents ?? 0) / 100, o.currency || "EUR")})
+                            </Button>
                           )}
                         </div>
                       </div>

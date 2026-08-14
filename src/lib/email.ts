@@ -115,6 +115,7 @@ export interface AdminOrderEmailData {
   phone?: string | null;
   deliveryMethod: "delivery" | "pickup";
   address?: Record<string, unknown> | null;
+  paymentNote?: string | null;
   items: AdminOrderItem[];
   currency: string;
   subtotalCents: number;
@@ -165,6 +166,7 @@ function buildAdminHtml(data: AdminOrderEmailData): string {
       ${data.customerEmail ? ` · ${escapeHtml(data.customerEmail)}` : ""}
       ${data.phone ? ` · ${escapeHtml(data.phone)}` : ""}<br>
       <strong>Entrega:</strong> ${entrega}
+      ${data.paymentNote ? `<br><strong style="color:#b45309;">${escapeHtml(data.paymentNote)}</strong>` : ""}
     </p>
     <table style="width:100%;border-collapse:collapse;font-size:14px;">
       ${rows}

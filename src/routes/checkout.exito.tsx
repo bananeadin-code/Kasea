@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
-import { CheckCircle2, Package, Loader2 } from "lucide-react";
+import { CheckCircle2, Package, Loader2, Store } from "lucide-react";
 import { useCartStore } from "@/lib/cart";
 import { getOrderBySession } from "@/lib/orders.functions";
 import { addStoredOrder, statusLabel, toneClasses, formatCents } from "@/lib/orders-local";
@@ -76,15 +76,19 @@ function CheckoutSuccessPage() {
   }, [order, session_id]);
 
   const badge = order ? statusLabel(order.status) : null;
+  const cashPending = order?.paymentStatus === "pending";
 
   return (
     <div className="container-luxe py-20 md:py-24">
       <div className="text-center">
         <CheckCircle2 className="mx-auto h-16 w-16 text-espresso" strokeWidth={1.25} />
-        <h1 className="mt-6 font-display text-4xl md:text-5xl">¡Gracias por tu compra!</h1>
+        <h1 className="mt-6 font-display text-4xl md:text-5xl">
+          {cashPending ? "¡Pedido registrado!" : "¡Gracias por tu compra!"}
+        </h1>
         <p className="mx-auto mt-4 max-w-md text-muted-foreground">
-          Tu pago se ha completado correctamente. Te hemos enviado un correo con la confirmación
-          de tu pedido y lo estamos preparando con cuidado.
+          {cashPending
+            ? "Hemos reservado tu pedido. Pásate por la tienda a recogerlo y pagar en efectivo; te avisaremos cuando esté listo."
+            : "Tu pago se ha completado correctamente. Te hemos enviado un correo con la confirmación de tu pedido y lo estamos preparando con cuidado."}
         </p>
       </div>
 
@@ -100,6 +104,18 @@ function CheckoutSuccessPage() {
               >
                 {badge.label}
               </span>
+            )}
+            {order.deliveryMethod === "pickup" && (
+              <p className="mb-3 flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Store className="h-4 w-4" strokeWidth={1.5} /> Recogida en tienda
+              </p>
+            )}
+            {cashPending && (
+              <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-800">
+                Pago pendiente: paga{" "}
+                <strong>{formatCents(order.totalCents, order.currency)}</strong> en efectivo al
+                recoger tu pedido.
+              </div>
             )}
             <ul className="divide-y divide-border/60">
               {order.items.map((it, idx) => {

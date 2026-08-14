@@ -26,6 +26,9 @@ export interface PublicOrder {
   subtotalCents: number;
   shippingCents: number;
   totalCents: number;
+  deliveryMethod: "delivery" | "pickup";
+  paymentMethod: "card" | "cash";
+  paymentStatus: "paid" | "pending";
   items: PublicOrderItem[];
 }
 
@@ -39,6 +42,7 @@ export const getOrderBySession = createServerFn({ method: "GET" })
       .from("orders")
       .select(
         "status, created_at, currency, subtotal_cents, shipping_cents, total_cents, " +
+          "delivery_method, payment_method, payment_status, " +
           "order_items(title, quantity, unit_price_cents, attributes)",
       )
       .eq("stripe_session_id", data.sessionId)
@@ -53,6 +57,9 @@ export const getOrderBySession = createServerFn({ method: "GET" })
       subtotal_cents: number | null;
       shipping_cents: number | null;
       total_cents: number | null;
+      delivery_method: string | null;
+      payment_method: string | null;
+      payment_status: string | null;
       order_items: Array<{
         title: string;
         quantity: number;
@@ -68,6 +75,9 @@ export const getOrderBySession = createServerFn({ method: "GET" })
       subtotalCents: o.subtotal_cents ?? 0,
       shippingCents: o.shipping_cents ?? 0,
       totalCents: o.total_cents ?? 0,
+      deliveryMethod: o.delivery_method === "pickup" ? "pickup" : "delivery",
+      paymentMethod: o.payment_method === "cash" ? "cash" : "card",
+      paymentStatus: o.payment_status === "pending" ? "pending" : "paid",
       items: (o.order_items ?? []).map((it) => ({
         title: it.title,
         quantity: it.quantity,

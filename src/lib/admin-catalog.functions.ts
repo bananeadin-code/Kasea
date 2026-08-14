@@ -246,6 +246,21 @@ export const updateOrderStatus = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// -------- Marcar un pedido en efectivo como COBRADO --------
+export const markOrderPaid = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) => z.object({ id: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const ctx = context as unknown as AuthedContext;
+    await assertAdmin(ctx);
+    const { error } = await (ctx.supabase as any)
+      .from("orders")
+      .update({ payment_status: "paid" })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 // -------- Limpieza del historial: pedidos ENTREGADOS con más de 30 días --------
 // Borra de forma permanente los pedidos ya entregados y antiguos (y sus líneas,
 // vía ON DELETE CASCADE). Se hace con la service role porque `orders` no tiene

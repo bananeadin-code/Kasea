@@ -218,3 +218,121 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     if (!session.url) return { error: "Stripe no devolvió una URL de pago." };
     return { url: session.url as string };
   });
+
+// ============================================================================
+// Pedido en EFECTIVO para recogida en tienda (sin Stripe).
+//
+// Revalida el carrito contra Supabase (precio/stock/activo), crea el pedido con
+// payment_method='cash' + payment_status='pending' y descuenta stock de forma
+// atómica (misma RPC que el pago con tarjeta). Devuelve una referencia
+// `cash_...` que hace de identificador del pedido (para éxito / mis pedidos).
+// ============================================================================
+const CashInputSchema = z.object({
+  items: z.array(ItemSchema).min(1),
+  customerName: z.string().trim().min(1, "El nombre es obligatorio").max(120),
+  phone: z.string().trim().min(3, "El teléfono es obligatorio").max(40),
+  email: z.union([z.string().email(), z.literal("")]).optional(),
+});
+
+export type CashOrderResult = { ref: string } | { error: string };
+
+export const createCashPickupOrder = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => CashInputSchema.parse(d))
+  .handler(async ({ data }): Promise<CashOrderResult> => {
+    const supabase = publicClient();
+    const ids = [...new Set(data.items.map((i) => i.variantId))];
+    const { data: rows, error } = await supabase
+      .from("product_variants")
+      .select("id, price_cents, currency, stock, title, products!inner ( handle, title, status )")
+      .in("id", ids);
+    if (error) return { error: `No se pudo validar el carrito: ${error.message}` };
+
+    const byId = new Map((rows as unknown as VariantRow[]).map((r) => [r.id, r]));
+
+    let subtotal = 0;
+    const rpcItems: Array<Record<string, unknown>> = [];
+    for (const item of data.items) {
+      const v = byId.get(item.variantId);
+      if (!v || !v.products || v.products.status !== "active") {
+        return { error: "Uno de los productos ya no está disponible. Actualiza tu bolsa." };
+      }
+      if (v.stock < item.quantity) {
+        return { error: `Sin stock suficiente de "${v.products.title}" (quedan ${v.stock}).` };
+      }
+      subtotal += v.price_cents * item.quantity;
+      const isDefault = !v.title || v.title === "Default Title";
+      const name = isDefault ? v.products.title : `${v.products.title} — ${v.title}`;
+      rpcItems.push({
+        variant_id: v.id,
+        product_handle: v.products.handle,
+        title: name,
+        unit_price_cents: v.price_cents,
+        quantity: item.quantity,
+        attributes: item.attributes ?? [],
+        ...(item.customDesignId ? { custom_design_id: item.customDesignId } : {}),
+      });
+    }
+
+    const currency = ((rows as unknown as VariantRow[])[0]?.currency || "eur").toUpperCase();
+    const ref = `cash_${crypto.randomUUID()}`;
+
+    // Cliente con service role: crea el pedido y descuenta stock (atómico).
+    const { supabaseAdmin: admin } = await import("@/integrations/supabase/client.server");
+    const { error: rpcErr } = await (admin as any).rpc("process_paid_order", {
+      _session_id: ref,
+      _payment_intent: null,
+      _email: data.email || null,
+      _name: data.customerName,
+      _phone: data.phone,
+      _address: null,
+      _delivery_method: "pickup",
+      _currency: currency,
+      _subtotal_cents: subtotal,
+      _shipping_cents: 0,
+      _total_cents: subtotal,
+      _items: rpcItems,
+      _payment_method: "cash",
+      _payment_status: "pending",
+    });
+    if (rpcErr) {
+      console.error("[cash-order] RPC falló:", rpcErr.message);
+      return { error: "No se pudo registrar el pedido. Inténtalo de nuevo." };
+    }
+
+    // Aviso al administrador (mejor esfuerzo; no bloquea la confirmación).
+    try {
+      const { data: settingsRow } = await admin
+        .from("shop_settings")
+        .select("notify_email")
+        .eq("id", "default")
+        .maybeSingle();
+      const notifyEmail =
+        (settingsRow?.notify_email as string | null) || process.env.ADMIN_NOTIFY_EMAIL || "";
+      if (notifyEmail) {
+        const { sendAdminOrderNotification } = await import("@/lib/email");
+        await sendAdminOrderNotification({
+          to: notifyEmail,
+          customerName: data.customerName,
+          customerEmail: data.email || null,
+          phone: data.phone,
+          deliveryMethod: "pickup",
+          address: null,
+          paymentNote: `Pago en EFECTIVO — PENDIENTE de cobro en tienda (${(subtotal / 100).toFixed(2)} ${currency})`,
+          items: rpcItems.map((i) => ({
+            title: String(i.title),
+            quantity: Number(i.quantity),
+            unit_price_cents: Number(i.unit_price_cents),
+            attributes: (i.attributes as Array<{ key: string; value: string }>) ?? [],
+          })),
+          currency,
+          subtotalCents: subtotal,
+          shippingCents: 0,
+          totalCents: subtotal,
+        });
+      }
+    } catch {
+      /* el correo no debe bloquear el pedido */
+    }
+
+    return { ref };
+  });

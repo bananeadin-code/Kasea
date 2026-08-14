@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Package, Loader2, ShoppingBag } from "lucide-react";
+import { Package, Loader2, ShoppingBag, Store } from "lucide-react";
 import { getOrderBySession } from "@/lib/orders.functions";
 import {
   getStoredOrders,
@@ -100,6 +100,16 @@ function OrderRow({ stored }: { stored: StoredOrder }) {
               ? order.items.map((i) => `${i.title} × ${i.quantity}`).join(", ")
               : stored.firstTitle}
           </p>
+          {order?.deliveryMethod === "pickup" && (
+            <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Store className="h-3.5 w-3.5" strokeWidth={1.5} /> Recogida en tienda
+            </p>
+          )}
+          {order?.paymentStatus === "pending" && (
+            <p className="mt-2 inline-block rounded border border-amber-300 bg-amber-50 px-2 py-1 text-xs text-amber-800">
+              Pago pendiente · {formatCents(order.totalCents, order.currency)} en efectivo al recoger
+            </p>
+          )}
         </div>
         <div className="text-right">
           {isLoading ? (

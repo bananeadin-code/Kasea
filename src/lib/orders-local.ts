@@ -84,7 +84,7 @@ export type StatusTone = "positive" | "info" | "neutral" | "negative";
 export function statusLabel(status: string): { label: string; tone: StatusTone } {
   switch (status) {
     case "paid":
-      return { label: "Pago confirmado · preparando tu pedido", tone: "info" };
+      return { label: "En preparación", tone: "info" };
     case "fulfilled":
       return { label: "Enviado", tone: "info" };
     case "delivered":

@@ -2,12 +2,13 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { ShoppingBag, ArrowLeft, Truck, Lock, Loader2, Store } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Truck, Lock, Loader2, Store, CreditCard, Banknote } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/lib/cart";
 import { formatPrice } from "@/lib/shopify";
-import { createCheckoutSession } from "@/lib/checkout.functions";
+import { createCheckoutSession, createCashPickupOrder } from "@/lib/checkout.functions";
 import { getShopSettingsPublic } from "@/lib/catalog.functions";
 
 type DeliveryMethod = "delivery" | "pickup";
@@ -27,9 +28,15 @@ function CheckoutPage() {
   const updateQuantity = useCartStore((s) => s.updateQuantity);
   const removeItem = useCartStore((s) => s.removeItem);
   const startCheckout = useServerFn(createCheckoutSession);
+  const startCash = useServerFn(createCashPickupOrder);
   const getSettings = useServerFn(getShopSettingsPublic);
   const [loading, setLoading] = useState(false);
   const [delivery, setDelivery] = useState<DeliveryMethod>("delivery");
+  // Solo aplica a recogida en tienda: pagar ahora con tarjeta o en efectivo allí.
+  const [payMethod, setPayMethod] = useState<"card" | "cash">("card");
+  const [cashName, setCashName] = useState("");
+  const [cashPhone, setCashPhone] = useState("");
+  const [cashEmail, setCashEmail] = useState("");
 
   const { data: settings } = useQuery({
     queryKey: ["shop-settings"],
@@ -67,6 +74,45 @@ function CheckoutPage() {
       setLoading(false);
     }
   };
+
+  // Recogida en tienda + pago en efectivo: registra el pedido sin pasar por Stripe.
+  const onCashOrder = async () => {
+    if (!cashName.trim() || !cashPhone.trim()) {
+      toast.error("Falta tu nombre y teléfono", {
+        description: "Los necesitamos para preparar tu pedido de recogida.",
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await startCash({
+        data: {
+          items: items.map((i) => ({
+            variantId: i.variantId,
+            quantity: i.quantity,
+            attributes: i.attributes,
+            customDesignId: i.customDesignId,
+          })),
+          customerName: cashName.trim(),
+          phone: cashPhone.trim(),
+          email: cashEmail.trim() || undefined,
+        },
+      });
+      if ("ref" in res) {
+        window.location.href = `/checkout/exito?session_id=${encodeURIComponent(res.ref)}`;
+        return;
+      }
+      toast.error("No se pudo registrar el pedido", { description: res.error });
+    } catch (e) {
+      toast.error("No se pudo registrar el pedido", {
+        description: e instanceof Error ? e.message : undefined,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isCash = delivery === "pickup" && payMethod === "cash";
 
   const currency = items[0]?.price.currencyCode ?? "EUR";
   const subtotal = items.reduce((sum, i) => sum + parseFloat(i.price.amount) * i.quantity, 0);
@@ -223,6 +269,84 @@ function CheckoutPage() {
                 </span>
               </label>
             </div>
+
+            {/* Recogida en tienda: elegir pagar ahora con tarjeta o en efectivo allí. */}
+            {delivery === "pickup" && (
+              <div className="mt-5 border-t border-border/60 pt-5">
+                <p className="mb-3 text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                  ¿Cómo quieres pagar?
+                </p>
+                <div className="space-y-3">
+                  <label
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+                      payMethod === "card" ? "border-espresso bg-secondary/40" : "border-border hover:bg-secondary/20"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 accent-espresso"
+                      checked={payMethod === "card"}
+                      onChange={() => setPayMethod("card")}
+                    />
+                    <span className="flex-1">
+                      <span className="flex items-center gap-2 font-medium">
+                        <CreditCard className="h-4 w-4" strokeWidth={1.5} /> Pagar ahora con tarjeta
+                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground">Pago seguro con Stripe.</span>
+                    </span>
+                  </label>
+
+                  <label
+                    className={`flex cursor-pointer items-start gap-3 rounded-lg border p-4 transition-colors ${
+                      payMethod === "cash" ? "border-espresso bg-secondary/40" : "border-border hover:bg-secondary/20"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="pay"
+                      className="mt-1 accent-espresso"
+                      checked={payMethod === "cash"}
+                      onChange={() => setPayMethod("cash")}
+                    />
+                    <span className="flex-1">
+                      <span className="flex items-center gap-2 font-medium">
+                        <Banknote className="h-4 w-4" strokeWidth={1.5} /> Pagar en efectivo al recoger
+                      </span>
+                      <span className="mt-1 block text-xs text-muted-foreground">
+                        Reservamos tu pedido y pagas en tienda.
+                      </span>
+                    </span>
+                  </label>
+                </div>
+
+                {payMethod === "cash" && (
+                  <div className="mt-4 space-y-3">
+                    <div>
+                      <label className="mb-1 block text-xs font-medium">Nombre y apellidos</label>
+                      <Input value={cashName} onChange={(e) => setCashName(e.target.value)} placeholder="Tu nombre" />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium">Teléfono</label>
+                      <Input
+                        value={cashPhone}
+                        onChange={(e) => setCashPhone(e.target.value)}
+                        placeholder="Para avisarte cuando esté listo"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1 block text-xs font-medium">Email (opcional)</label>
+                      <Input
+                        type="email"
+                        value={cashEmail}
+                        onChange={(e) => setCashEmail(e.target.value)}
+                        placeholder="tu@email.com"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl border border-border/60 bg-card p-6">
@@ -265,20 +389,24 @@ function CheckoutPage() {
             </div>
 
             <Button
-              onClick={onPay}
+              onClick={isCash ? onCashOrder : onPay}
               disabled={loading}
               className="mt-6 h-13 w-full rounded-none bg-espresso py-6 text-ivory tracking-[0.14em] hover:bg-espresso/90"
             >
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : isCash ? (
+                <Banknote className="mr-2 h-4 w-4" strokeWidth={1.5} />
               ) : (
                 <Lock className="mr-2 h-4 w-4" strokeWidth={1.5} />
               )}
-              Pagar con tarjeta
+              {isCash ? "Confirmar pedido (pagas en tienda)" : "Pagar con tarjeta"}
             </Button>
             <p className="mt-3 flex items-center justify-center gap-1.5 text-center text-xs text-muted-foreground">
               <Lock className="h-3 w-3" strokeWidth={1.5} />
-              Pago seguro con tarjeta (Visa/MasterCard) gestionado por Stripe.
+              {isCash
+                ? "Reservamos tu pedido; pagas en efectivo al recogerlo en tienda."
+                : "Pago seguro con tarjeta (Visa/MasterCard) gestionado por Stripe."}
             </p>
           </div>
         </aside>
