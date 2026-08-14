@@ -33,7 +33,11 @@ export function SiteFooter() {
         <div className="md:col-span-6">
           <BrandLogo className="inline-flex" imageClassName="h-18 w-auto max-w-[13rem] object-contain md:h-22 md:max-w-[16rem]" />
           <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Fundas con una imagen más editorial, una presencia más cuidada y una experiencia digital construida para reforzar el valor percibido de Kasea Store. Y si no encuentras el diseño que te identifique, podemos crear una funda personalizada hecha solo para ti.
+            <strong className="text-foreground">Eleva la protección de tu móvil a otro nivel.</strong>{" "}
+            Fundas exclusivas, diseños únicos y detalles pensados para que tu móvil también refleje tu
+            estilo. En Kasea creemos que proteger tu móvil no significa renunciar al diseño. Y si no
+            encuentras el diseño que te representa,{" "}
+            <strong className="text-foreground">crea una funda personalizada y hazla solo tuya.</strong>
           </p>
         </div>
 

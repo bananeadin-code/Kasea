@@ -298,10 +298,10 @@ function HomepageCarousel() {
     <section id="galeria-home" className="border-y border-border/60 bg-secondary/30 py-20 md:py-28">
       <div className="container-luxe">
         <div className="mx-auto mb-12 max-w-2xl text-center">
-          <p className="eyebrow mb-3">Galería editorial</p>
-          <h2 className="font-display text-4xl md:text-5xl">Nuestras fundas, en su mejor luz</h2>
+          <p className="eyebrow mb-3">Galería</p>
+          <h2 className="font-display text-4xl md:text-5xl">Diseños que marcan la diferencia</h2>
           <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-            Una selección de piezas Kasea pensadas para transmitir la sofisticación de la marca desde el primer vistazo.
+            Fundas Kasea creadas para proteger tu móvil y darle un toque único a tu estilo.
           </p>
         </div>
 
