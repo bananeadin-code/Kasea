@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { listCarouselImagesPublic } from "@/lib/admin.functions";
 import { useCategoryImages, pickCategoryImage, type CategorySlug } from "@/hooks/useCategoryImages";
 import { useSiteContent } from "@/hooks/useSiteContent";
+import { seo } from "@/lib/seo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -40,16 +41,13 @@ const uploadedCarouselImages = [
 ];
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Kasea Store | Fundas premium para móvil" },
-      { name: "description", content: "Descubre Kasea Store: fundas para móvil con estética premium, diseño lifestyle y acabados de alta calidad. Compra online en español con una experiencia elegante y responsive." },
-      { property: "og:title", content: "Kasea Store | Fundas premium para móvil" },
-      { property: "og:description", content: "Una tienda de fundas premium con imagen elegante, diseño cuidado y experiencia de compra pensada para convertir." },
-      { property: "og:url", content: "/" },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-  }),
+  head: () =>
+    seo({
+      title: "Kasea Store | Fundas premium para iPhone",
+      description:
+        "Fundas premium para iPhone con diseño elegante y acabados de alta calidad. Compra online segura en España y crea tu funda personalizada.",
+      path: "/",
+    }),
   component: HomePage,
 });
 

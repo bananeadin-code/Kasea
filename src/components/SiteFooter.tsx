@@ -59,8 +59,9 @@ export function SiteFooter() {
       <div className="border-t border-border/60">
         <div className="container-luxe flex flex-col items-center justify-between gap-3 py-6 text-xs text-muted-foreground md:flex-row">
           <p>© {new Date().getFullYear()} Kasea Store. Todos los derechos reservados.</p>
-          <p className="flex items-center gap-3">
-            <span>Fundas premium para iPhone · Hecho en España</span>
+          <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
+            <Link to="/terminos" className="hover:text-foreground">Términos y Condiciones</Link>
+            <Link to="/privacidad" className="hover:text-foreground">Política de Privacidad</Link>
             <Link to="/auth" search={{ registro: "1" }} className="opacity-50 hover:opacity-100 hover:text-foreground">Crear cuenta</Link>
             <Link to="/admin" className="opacity-50 hover:opacity-100 hover:text-foreground">Admin</Link>
           </p>

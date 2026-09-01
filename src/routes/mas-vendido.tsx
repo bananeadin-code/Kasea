@@ -4,21 +4,19 @@ import { useServerFn } from "@tanstack/react-start";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { getBestSellingPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { seo } from "@/lib/seo";
 
 // Máximo de productos a mostrar en "Lo más vendido" (cámbialo a 15 si prefieres).
 const MAX_BEST_SELLING = 20;
 
 export const Route = createFileRoute("/mas-vendido")({
-  head: () => ({
-    meta: [
-      { title: "Lo más vendido — Kasea Store" },
-      { name: "description", content: "Descubre las fundas más vendidas de Kasea Store: los diseños favoritos de nuestros clientes." },
-      { property: "og:title", content: "Lo más vendido — Kasea Store" },
-      { property: "og:description", content: "Los diseños favoritos de nuestros clientes." },
-      { property: "og:url", content: "/mas-vendido" },
-    ],
-    links: [{ rel: "canonical", href: "/mas-vendido" }],
-  }),
+  head: () =>
+    seo({
+      title: "Lo más vendido — Kasea Store",
+      description:
+        "Descubre las fundas más vendidas de Kasea Store: los diseños favoritos de nuestros clientes para iPhone.",
+      path: "/mas-vendido",
+    }),
   component: BestSellingPage,
 });
 

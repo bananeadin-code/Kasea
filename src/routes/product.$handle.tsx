@@ -10,6 +10,7 @@ import { PHONE_BRANDS, PHONE_MODELS, type PhoneBrand } from "@/lib/phone-models"
 import { listProductImageOverridesPublic } from "@/lib/admin.functions";
 import { getProductByHandlePublic, getProductsPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { SITE_URL } from "@/lib/seo";
 
 
 async function fetchProduct(handle: string): Promise<ShopifyProduct | null> {
@@ -39,10 +40,11 @@ export const Route = createFileRoute("/product/$handle")({
         { property: "og:title", content: `${p.title} — Kasea Store` },
         { property: "og:description", content: p.description?.slice(0, 155) || "" },
         { property: "og:type", content: "product" },
-        { property: "og:url", content: `/product/${params.handle}` },
+        { property: "og:url", content: `${SITE_URL}/product/${params.handle}` },
+        { name: "robots", content: "index, follow" },
         ...(img ? [{ property: "og:image", content: img }, { name: "twitter:image", content: img }] : []),
       ],
-      links: [{ rel: "canonical", href: `/product/${params.handle}` }],
+      links: [{ rel: "canonical", href: `${SITE_URL}/product/${params.handle}` }],
       scripts: [{
         type: "application/ld+json",
         children: JSON.stringify({

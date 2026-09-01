@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as TiendaRouteImport } from './routes/tienda'
+import { Route as TerminosRouteImport } from './routes/terminos'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacidadRouteImport } from './routes/privacidad'
 import { Route as PersonalizarRouteImport } from './routes/personalizar'
 import { Route as NuevaContrasenaRouteImport } from './routes/nueva-contrasena'
 import { Route as MisPedidosRouteImport } from './routes/mis-pedidos'
@@ -42,9 +44,19 @@ const TiendaRoute = TiendaRouteImport.update({
   path: '/tienda',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TerminosRoute = TerminosRouteImport.update({
+  id: '/terminos',
+  path: '/terminos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadRoute = PrivacidadRouteImport.update({
+  id: '/privacidad',
+  path: '/privacidad',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PersonalizarRoute = PersonalizarRouteImport.update({
@@ -191,7 +203,9 @@ export interface FileRoutesByFullPath {
   '/mis-pedidos': typeof MisPedidosRoute
   '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terminos': typeof TerminosRoute
   '/tienda': typeof TiendaRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
@@ -219,7 +233,9 @@ export interface FileRoutesByTo {
   '/mis-pedidos': typeof MisPedidosRoute
   '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terminos': typeof TerminosRoute
   '/tienda': typeof TiendaRoute
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
   '/checkout/exito': typeof CheckoutExitoRoute
@@ -248,7 +264,9 @@ export interface FileRoutesById {
   '/mis-pedidos': typeof MisPedidosRoute
   '/nueva-contrasena': typeof NuevaContrasenaRoute
   '/personalizar': typeof PersonalizarRoute
+  '/privacidad': typeof PrivacidadRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terminos': typeof TerminosRoute
   '/tienda': typeof TiendaRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/api/stripe-webhook': typeof ApiStripeWebhookRoute
@@ -278,7 +296,9 @@ export interface FileRouteTypes {
     | '/mis-pedidos'
     | '/nueva-contrasena'
     | '/personalizar'
+    | '/privacidad'
     | '/sitemap.xml'
+    | '/terminos'
     | '/tienda'
     | '/admin'
     | '/api/stripe-webhook'
@@ -306,7 +326,9 @@ export interface FileRouteTypes {
     | '/mis-pedidos'
     | '/nueva-contrasena'
     | '/personalizar'
+    | '/privacidad'
     | '/sitemap.xml'
+    | '/terminos'
     | '/tienda'
     | '/api/stripe-webhook'
     | '/checkout/exito'
@@ -334,7 +356,9 @@ export interface FileRouteTypes {
     | '/mis-pedidos'
     | '/nueva-contrasena'
     | '/personalizar'
+    | '/privacidad'
     | '/sitemap.xml'
+    | '/terminos'
     | '/tienda'
     | '/_authenticated/admin'
     | '/api/stripe-webhook'
@@ -364,7 +388,9 @@ export interface RootRouteChildren {
   MisPedidosRoute: typeof MisPedidosRoute
   NuevaContrasenaRoute: typeof NuevaContrasenaRoute
   PersonalizarRoute: typeof PersonalizarRoute
+  PrivacidadRoute: typeof PrivacidadRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TerminosRoute: typeof TerminosRoute
   TiendaRoute: typeof TiendaRoute
   ApiStripeWebhookRoute: typeof ApiStripeWebhookRoute
   CheckoutExitoRoute: typeof CheckoutExitoRoute
@@ -381,11 +407,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TiendaRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/terminos': {
+      id: '/terminos'
+      path: '/terminos'
+      fullPath: '/terminos'
+      preLoaderRoute: typeof TerminosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidad': {
+      id: '/privacidad'
+      path: '/privacidad'
+      fullPath: '/privacidad'
+      preLoaderRoute: typeof PrivacidadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/personalizar': {
@@ -615,7 +655,9 @@ const rootRouteChildren: RootRouteChildren = {
   MisPedidosRoute: MisPedidosRoute,
   NuevaContrasenaRoute: NuevaContrasenaRoute,
   PersonalizarRoute: PersonalizarRoute,
+  PrivacidadRoute: PrivacidadRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TerminosRoute: TerminosRoute,
   TiendaRoute: TiendaRoute,
   ApiStripeWebhookRoute: ApiStripeWebhookRoute,
   CheckoutExitoRoute: CheckoutExitoRoute,

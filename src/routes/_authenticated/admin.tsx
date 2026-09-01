@@ -6,6 +6,7 @@ import { checkIsAdmin } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/admin")({
+  head: () => ({ meta: [{ name: "robots", content: "noindex, nofollow" }] }),
   loader: async () => {
     const { isAdmin } = await checkIsAdmin();
     if (!isAdmin) {

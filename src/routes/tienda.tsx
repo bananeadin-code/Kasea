@@ -6,20 +6,18 @@ import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { useServerFn } from "@tanstack/react-start";
 import { getProductsPublic } from "@/lib/catalog.functions";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { seo } from "@/lib/seo";
 
 export const Route = createFileRoute("/tienda")({
   validateSearch: (search: Record<string, unknown>): { q?: string } =>
     typeof search.q === "string" && search.q ? { q: search.q } : {},
-  head: () => ({
-    meta: [
-      { title: "Tienda — Fundas premium | Kasea Store" },
-      { name: "description", content: "Explora toda la colección Kasea: fundas premium para iPhone y Samsung Galaxy diseñadas con materiales seleccionados." },
-      { property: "og:title", content: "Tienda — Kasea Store" },
-      { property: "og:description", content: "Explora la colección Kasea." },
-      { property: "og:url", content: "/tienda" },
-    ],
-    links: [{ rel: "canonical", href: "/tienda" }],
-  }),
+  head: () =>
+    seo({
+      title: "Tienda — Fundas premium para iPhone | Kasea Store",
+      description:
+        "Explora toda la colección Kasea: fundas premium para iPhone diseñadas con materiales seleccionados. Envío a España.",
+      path: "/tienda",
+    }),
   component: ShopPage,
 });
 

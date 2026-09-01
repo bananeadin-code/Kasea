@@ -3,6 +3,7 @@ import { Mail, Phone, MessageCircle, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { seo } from "@/lib/seo";
 
 // Datos de contacto de la tienda.
 const WHATSAPP_NUMBER = "34711278306"; // sin + ni espacios, para wa.me / tel
@@ -10,16 +11,13 @@ const PHONE_DISPLAY = "+34 711 278 306";
 const EMAIL = "kasea.store26@gmail.com";
 
 export const Route = createFileRoute("/contacto")({
-  head: () => ({
-    meta: [
-      { title: "Contacto — Kasea Store" },
-      { name: "description", content: "Contacta con Kasea Store por WhatsApp, correo o teléfono. Atención al cliente en español." },
-      { property: "og:title", content: "Contacto — Kasea Store" },
-      { property: "og:description", content: "Estamos aquí para ayudarte." },
-      { property: "og:url", content: "/contacto" },
-    ],
-    links: [{ rel: "canonical", href: "/contacto" }],
-  }),
+  head: () =>
+    seo({
+      title: "Contacto — Kasea Store",
+      description:
+        "Contacta con Kasea Store por WhatsApp, correo o teléfono. Atención al cliente en español.",
+      path: "/contacto",
+    }),
   component: ContactPage,
 });
 

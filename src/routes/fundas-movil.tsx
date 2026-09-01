@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Package, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { formatPrice, type ShopifyProduct } from "@/lib/shopify";
 import { getProductsPublic } from "@/lib/catalog.functions";
+import { seo } from "@/lib/seo";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,23 +19,13 @@ import {
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/fundas-movil")({
-  head: () => ({
-    meta: [
-      { title: "Fundas de móvil | Kasea Store" },
-      {
-        name: "description",
-        content:
-          "Descubre nuestra colección de fundas de móvil premium: diseño, protección y estilo Kasea para iPhone y Samsung Galaxy.",
-      },
-      { property: "og:title", content: "Fundas de móvil | Kasea Store" },
-      {
-        property: "og:description",
-        content: "Fundas premium para iPhone y Samsung Galaxy.",
-      },
-      { property: "og:url", content: "/fundas-movil" },
-    ],
-    links: [{ rel: "canonical", href: "/fundas-movil" }],
-  }),
+  head: () =>
+    seo({
+      title: "Fundas de móvil para iPhone | Kasea Store",
+      description:
+        "Colección de fundas de móvil premium para iPhone: diseño, protección y estilo Kasea.",
+      path: "/fundas-movil",
+    }),
   component: FundasPage,
 });
 

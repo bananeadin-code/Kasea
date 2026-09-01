@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import catSublimacion from "@/assets/cat-sublimacion.jpg";
 import { useCategoryImages, pickCategoryImage, type CategorySlug } from "@/hooks/useCategoryImages";
+import { seo } from "@/lib/seo";
 
 const CATEGORIES: Array<{
   title: string;
@@ -22,16 +23,13 @@ const CATEGORIES: Array<{
 ];
 
 export const Route = createFileRoute("/fundas")({
-  head: () => ({
-    meta: [
-      { title: "Fundas — Kasea Store" },
-      { name: "description", content: "Descubre nuestras fundas para sublimación con diseño premium y protección Kasea." },
-      { property: "og:title", content: "Fundas | Kasea Store" },
-      { property: "og:description", content: "Explora la colección de fundas Kasea." },
-      { property: "og:url", content: "/fundas" },
-    ],
-    links: [{ rel: "canonical", href: "/fundas" }],
-  }),
+  head: () =>
+    seo({
+      title: "Fundas para iPhone — Kasea Store",
+      description:
+        "Descubre las fundas Kasea para iPhone: diseño premium, protección y la opción de personalizar la tuya.",
+      path: "/fundas",
+    }),
   component: FundasCategoriesPage,
 });
 

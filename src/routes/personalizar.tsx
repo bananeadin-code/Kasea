@@ -17,6 +17,7 @@ import { uploadCustomDesign, saveCustomDesign } from "@/lib/custom-design.functi
 import { useCartStore } from "@/lib/cart";
 import { type ShopifyProduct } from "@/lib/shopify";
 import { getProductByHandlePublic } from "@/lib/catalog.functions";
+import { seo } from "@/lib/seo";
 
 // Producto del catálogo usado para las fundas personalizadas
 const CUSTOM_PRODUCT_HANDLE = "funda-personalizada";
@@ -98,23 +99,13 @@ function CameraModule({ spec }: { spec: Spec }) {
 
 
 export const Route = createFileRoute("/personalizar")({
-  head: () => ({
-    meta: [
-      { title: "Personaliza tu funda — Kasea Store" },
-      {
-        name: "description",
-        content:
-          "Diseña tu funda de iPhone: elige modelo, sube tu foto, añade tu nombre o frase y escoge tipografía y color.",
-      },
-      { property: "og:title", content: "Personaliza tu funda | Kasea Store" },
-      {
-        property: "og:description",
-        content: "Crea tu funda única para iPhone: tu imagen, tu texto, tu estilo.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: "Personaliza tu funda — Kasea Store",
+      description:
+        "Diseña tu funda de iPhone: elige modelo, sube tu foto, añade tu nombre o frase y escoge tipografía y color.",
+      path: "/personalizar",
+    }),
   component: PersonalizarPage,
 });
 

@@ -16,6 +16,8 @@ import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { BackButton } from "@/components/BackButton";
+import { CookieConsent } from "@/components/CookieConsent";
+import { SITE_URL } from "@/lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -81,8 +83,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:site_name", content: "Kasea Store" },
       { property: "og:type", content: "website" },
       { property: "og:title", content: "Kasea Store | Fundas premium en español" },
-      { property: "og:description", content: "Una tienda elegante y conversion-focused para mostrar y vender fundas premium con Shopify." },
+      { property: "og:description", content: "Fundas premium para iPhone con diseño elegante y opción de funda personalizada. Compra online segura en España." },
+      { property: "og:url", content: `${SITE_URL}/` },
+      { property: "og:image", content: `${SITE_URL}/brand/hero-kasea.png` },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: `${SITE_URL}/brand/hero-kasea.png` },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -99,7 +104,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "@type": "Organization",
           name: "Kasea Store",
           description: "Tienda online de fundas premium para móvil en español.",
-          url: "/",
+          url: SITE_URL,
+          logo: `${SITE_URL}/brand/kasea-logo.png`,
         }),
       },
     ],
@@ -135,6 +141,7 @@ function AppInner() {
       </main>
       <SiteFooter />
       <Toaster position="top-center" richColors />
+      <CookieConsent />
     </div>
   );
 }

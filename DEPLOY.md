@@ -210,3 +210,20 @@ Cuando el flujo completo esté validado en modo test:
 3. En Render, sustituye `VITE_STRIPE_PUBLISHABLE_KEY` y `STRIPE_SECRET_KEY` por las
    `live`, y crea un **webhook nuevo en modo live** (nuevo `whsec_…`).
 4. Verifica un pedido real pequeño antes de anunciar la tienda.
+
+---
+
+## 6. SEO y Analítica (Fase 2)
+
+- **Google Analytics:** añade `VITE_GA_ID=G-QT6L4T9PEK` en *Environment* de Render y
+  **redeploya** (los `VITE_` se inyectan en el build). GA solo se activa tras el
+  consentimiento de cookies. Guía completa en `SEO.md`.
+- **Dominio canónico:** `https://kasea.es` (apex, sin www). El redirect 301 de
+  `www.kasea.es → kasea.es` ya lo gestiona **Render** (el dominio `www` está como
+  *redirects to kasea.es* en Settings → Custom Domains). Si cambiaras de hosting,
+  configura ahí ese redirect 301 a la versión canónica.
+- **X-Robots-Tag:** Render **no** añade cabecera `X-Robots-Tag: noindex` por defecto,
+  así que el sitio es indexable. Si migraras a otro hosting/CDN, verifica en su panel
+  que no se inyecte esa cabecera (bloquearía la indexación pese al código).
+- **Sitemap:** `https://kasea.es/sitemap.xml` (dinámico, incluye productos). Enviarlo
+  en Search Console — ver `SEO.md`.
