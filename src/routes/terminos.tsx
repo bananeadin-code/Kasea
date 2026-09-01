@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/terminos")({
   head: () =>
@@ -11,22 +12,42 @@ export const Route = createFileRoute("/terminos")({
   component: TerminosPage,
 });
 
-// NOTA: texto base orientativo para una tienda de e-commerce en España.
-// Los valores entre [CORCHETES] debe rellenarlos/validarlos el titular (Julián),
-// idealmente con revisión legal antes de darle carácter definitivo.
+// Datos legales editables desde el panel (/admin/contenido). La fecha de
+// "última actualización" se calcula sola con la última edición legal.
+function legalDate(iso?: string): string {
+  const d = iso ? new Date(iso) : new Date();
+  try {
+    return d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
 function TerminosPage() {
+  const c = useSiteContent();
+  const val = (k: string, fallback: string) => (c[k]?.trim() ? c[k] : fallback);
+
+  const negocio = val("legal_business_name", "[Razón social — pendiente de completar]");
+  const nif = val("legal_nif", "[NIF/DNI]");
+  const direccion = val("legal_address", "[Dirección]");
+  const email = val("legal_email", "[email de contacto]");
+  const envios = val("legal_shipping_company", "[empresa de envíos]");
+  const plazo = val("legal_delivery_days", "[plazo]");
+
   return (
     <div className="container-luxe max-w-3xl py-16 md:py-24">
       <h1 className="font-display text-4xl md:text-5xl">Términos y Condiciones</h1>
-      <p className="mt-3 text-sm text-muted-foreground">Última actualización: [FECHA]</p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Última actualización: {legalDate(c.__legal_updated_at)}
+      </p>
 
-      <div className="prose-legal mt-10 space-y-8 text-sm leading-relaxed text-foreground/85">
+      <div className="mt-10 space-y-8 text-sm leading-relaxed text-foreground/85">
         <section>
           <h2 className="mb-2 font-display text-xl text-foreground">1. Identificación del titular</h2>
           <p>
-            Este sitio web es titularidad de <strong>[RAZÓN SOCIAL / NOMBRE Y APELLIDOS]</strong>, con
-            NIF/DNI <strong>[NIF/DNI]</strong>, domicilio en <strong>[DIRECCIÓN COMPLETA]</strong> y
-            correo de contacto <strong>[EMAIL DE CONTACTO]</strong> (en adelante, "Kasea").
+            Este sitio web es titularidad de <strong>{negocio}</strong>, con NIF/DNI{" "}
+            <strong>{nif}</strong>, domicilio en <strong>{direccion}</strong> y correo de contacto{" "}
+            <strong>{email}</strong> (en adelante, "Kasea").
           </p>
         </section>
 
@@ -60,10 +81,10 @@ function TerminosPage() {
         <section>
           <h2 className="mb-2 font-display text-xl text-foreground">5. Envíos y recogida</h2>
           <p>
-            Los envíos se realizan a través de <strong>[EMPRESA DE ENVÍOS]</strong> a la dirección
-            indicada. Los gastos y el umbral de envío gratuito se muestran en el proceso de compra. El
-            plazo estimado de entrega es de <strong>[PLAZO]</strong> días hábiles. También es posible la
-            recogida en tienda cuando el cliente lo selecciona.
+            Los envíos se realizan a través de <strong>{envios}</strong> a la dirección indicada. Los
+            gastos y el umbral de envío gratuito se muestran en el proceso de compra. El plazo estimado
+            de entrega es de <strong>{plazo}</strong> días hábiles. También es posible la recogida en
+            tienda cuando el cliente lo selecciona.
           </p>
         </section>
 
@@ -73,7 +94,7 @@ function TerminosPage() {
             Como consumidor, dispones de 14 días naturales desde la recepción para desistir de la compra
             sin justificación, conforme a la normativa española y europea. <strong>Excepción:</strong> las
             fundas personalizadas, al fabricarse según tus especificaciones, están excluidas del derecho
-            de desistimiento. Para ejercerlo, escribe a [EMAIL DE CONTACTO].
+            de desistimiento. Para ejercerlo, escribe a <strong>{email}</strong>.
           </p>
         </section>
 
@@ -81,7 +102,7 @@ function TerminosPage() {
           <h2 className="mb-2 font-display text-xl text-foreground">7. Devoluciones y garantía</h2>
           <p>
             Los productos cuentan con la garantía legal aplicable. Si recibes un producto defectuoso o
-            erróneo, contáctanos en [EMAIL DE CONTACTO] para gestionar la sustitución o el reembolso.
+            erróneo, contáctanos en <strong>{email}</strong> para gestionar la sustitución o el reembolso.
           </p>
         </section>
 

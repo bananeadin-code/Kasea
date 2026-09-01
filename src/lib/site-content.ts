@@ -17,6 +17,14 @@ export const SITE_CONTENT_DEFAULTS: SiteContent = {
   hero_intro:
     "En KASEA diseñamos exclusivamente fundas para iPhone. Elige tu modelo y, si no encuentras tu estilo, te lo creamos.",
   hero_cta: "Lo más vendido",
+  // Datos legales (Términos y Política de Privacidad). Vacío = se muestra un
+  // aviso "por completar" en la página legal.
+  legal_business_name: "",
+  legal_nif: "",
+  legal_address: "",
+  legal_email: "",
+  legal_shipping_company: "",
+  legal_delivery_days: "",
 };
 
 export interface SiteContentField {
@@ -41,6 +49,16 @@ export const SITE_CONTENT_FIELDS: SiteContentField[] = [
     multiline: true,
   },
   { key: "hero_cta", label: "Portada · texto del botón principal" },
+  {
+    key: "legal_business_name",
+    label: "Legal · Razón social o nombre y apellidos",
+    help: "Aparece en Términos y en la Política de Privacidad.",
+  },
+  { key: "legal_nif", label: "Legal · NIF / DNI" },
+  { key: "legal_address", label: "Legal · Dirección completa" },
+  { key: "legal_email", label: "Legal · Email de contacto" },
+  { key: "legal_shipping_company", label: "Legal · Empresa de envíos" },
+  { key: "legal_delivery_days", label: "Legal · Plazo de entrega (días)", help: "Ej.: 3-5" },
 ];
 
 // Combina las filas guardadas con los valores por defecto (nunca deja huecos).

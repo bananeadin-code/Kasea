@@ -57,8 +57,10 @@ function AdminContenido() {
       <div className="mb-6">
         <h2 className="font-display text-2xl">Textos de la web</h2>
         <p className="text-sm text-muted-foreground">
-          Cambia los textos destacados de la portada y la cinta de anuncio —ideal para
-          temporadas o campañas—. Los cambios se aplican en la web al guardar.
+          Cambia los textos destacados de la portada y la cinta de anuncio (ideal para temporadas o
+          campañas) y los <strong>datos legales</strong> (Términos y Política de Privacidad). Los cambios
+          se aplican en la web al guardar; la fecha de "última actualización" de las páginas legales se
+          pone sola.
         </p>
       </div>
 

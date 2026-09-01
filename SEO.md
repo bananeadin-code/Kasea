@@ -47,15 +47,17 @@ head: () => seo({ title: "…", description: "…", path: "/nueva-ruta" }),
 
 La imagen para compartir (`og:image`) por defecto es `/brand/hero-kasea.png`; se puede cambiar por página pasando `image`.
 
-## 7. Legal — placeholders que Julián debe rellenar
+## 7. Legal — datos que Julián rellena desde el panel
 
-En `src/routes/terminos.tsx` y `src/routes/privacidad.tsx`, sustituye los `[CORCHETES]`:
+Los datos de Términos y Política de Privacidad se editan **desde el panel de administración**, sin tocar código: **Admin → Textos de la web**, campos con prefijo **"Legal ·"**:
 
-- `[RAZÓN SOCIAL / NOMBRE Y APELLIDOS]`
-- `[NIF/DNI]`
-- `[DIRECCIÓN COMPLETA]`
-- `[EMAIL DE CONTACTO]`
-- `[EMPRESA DE ENVÍOS]` (cuando se cierre)
-- `[PLAZO]` de entrega y `[FECHA]` de última actualización
+- Razón social o nombre y apellidos
+- NIF / DNI
+- Dirección completa
+- Email de contacto
+- Empresa de envíos (cuando se cierre)
+- Plazo de entrega (días)
+
+Al guardar, las páginas `/terminos` y `/privacidad` se actualizan solas, y la **fecha de "última actualización" se pone automáticamente** (con la última edición legal). Mientras un campo esté vacío, la página muestra un aviso "pendiente de completar".
 
 > Los textos legales son una **base orientativa**, no asesoría jurídica. Conviene una revisión legal antes de considerarlos definitivos.

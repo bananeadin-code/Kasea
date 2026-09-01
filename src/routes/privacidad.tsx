@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { seo } from "@/lib/seo";
+import { useSiteContent } from "@/hooks/useSiteContent";
 
 export const Route = createFileRoute("/privacidad")({
   head: () =>
@@ -11,22 +12,38 @@ export const Route = createFileRoute("/privacidad")({
   component: PrivacidadPage,
 });
 
-// NOTA: texto base orientativo (RGPD / LOPDGDD, España). Los [CORCHETES] los
-// rellena el titular (Julián); conviene revisión legal antes de publicarlo como
-// definitivo.
+function legalDate(iso?: string): string {
+  const d = iso ? new Date(iso) : new Date();
+  try {
+    return d.toLocaleDateString("es-ES", { day: "numeric", month: "long", year: "numeric" });
+  } catch {
+    return "";
+  }
+}
+
 function PrivacidadPage() {
+  const c = useSiteContent();
+  const val = (k: string, fallback: string) => (c[k]?.trim() ? c[k] : fallback);
+
+  const negocio = val("legal_business_name", "[Razón social — pendiente de completar]");
+  const nif = val("legal_nif", "[NIF/DNI]");
+  const direccion = val("legal_address", "[Dirección]");
+  const email = val("legal_email", "[email de contacto]");
+  const envios = val("legal_shipping_company", "[empresa de envíos]");
+
   return (
     <div className="container-luxe max-w-3xl py-16 md:py-24">
       <h1 className="font-display text-4xl md:text-5xl">Política de Privacidad</h1>
-      <p className="mt-3 text-sm text-muted-foreground">Última actualización: [FECHA]</p>
+      <p className="mt-3 text-sm text-muted-foreground">
+        Última actualización: {legalDate(c.__legal_updated_at)}
+      </p>
 
       <div className="mt-10 space-y-8 text-sm leading-relaxed text-foreground/85">
         <section>
           <h2 className="mb-2 font-display text-xl text-foreground">1. Responsable del tratamiento</h2>
           <p>
-            <strong>[RAZÓN SOCIAL / NOMBRE Y APELLIDOS]</strong>, NIF/DNI <strong>[NIF/DNI]</strong>,
-            domicilio en <strong>[DIRECCIÓN COMPLETA]</strong>. Contacto para privacidad:{" "}
-            <strong>[EMAIL DE CONTACTO]</strong>.
+            <strong>{negocio}</strong>, NIF/DNI <strong>{nif}</strong>, domicilio en{" "}
+            <strong>{direccion}</strong>. Contacto para privacidad: <strong>{email}</strong>.
           </p>
         </section>
 
@@ -66,8 +83,8 @@ function PrivacidadPage() {
             Compartimos datos únicamente con proveedores necesarios para prestar el servicio:{" "}
             <strong>Stripe</strong> (procesamiento de pagos), <strong>Supabase</strong> (alojamiento de la
             base de datos), <strong>Resend</strong> (envío de correos), <strong>Google</strong>{" "}
-            (analítica, con tu consentimiento) y <strong>[EMPRESA DE ENVÍOS]</strong> (entrega). No
-            vendemos tus datos.
+            (analítica, con tu consentimiento) y <strong>{envios}</strong> (entrega). No vendemos tus
+            datos.
           </p>
         </section>
 
@@ -83,8 +100,8 @@ function PrivacidadPage() {
           <h2 className="mb-2 font-display text-xl text-foreground">7. Tus derechos</h2>
           <p>
             Puedes ejercer tus derechos de acceso, rectificación, supresión, oposición, limitación y
-            portabilidad escribiendo a <strong>[EMAIL DE CONTACTO]</strong>. También puedes reclamar ante
-            la Agencia Española de Protección de Datos (aepd.es).
+            portabilidad escribiendo a <strong>{email}</strong>. También puedes reclamar ante la Agencia
+            Española de Protección de Datos (aepd.es).
           </p>
         </section>
       </div>

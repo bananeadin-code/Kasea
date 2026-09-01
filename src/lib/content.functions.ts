@@ -15,10 +15,19 @@ function publicClient() {
 
 export const getSiteContent = createServerFn({ method: "GET" }).handler(async (): Promise<SiteContent> => {
   const supabase = publicClient();
-  const { data, error } = await (supabase as any).from("site_content").select("key, value");
+  const { data, error } = await (supabase as any).from("site_content").select("key, value, updated_at");
   // Si la tabla aún no existe (migración sin aplicar) o falla, usamos los valores por defecto.
   if (error) return withDefaults(null);
   const map: SiteContent = {};
-  for (const r of (data ?? []) as Array<{ key: string; value: string }>) map[r.key] = r.value;
-  return withDefaults(map);
+  // Fecha de última edición LEGAL (para "última actualización" de Términos/Privacidad).
+  let legalUpdated = "";
+  for (const r of (data ?? []) as Array<{ key: string; value: string; updated_at: string }>) {
+    map[r.key] = r.value;
+    if (r.key.startsWith("legal_") && r.updated_at && r.updated_at > legalUpdated) {
+      legalUpdated = r.updated_at;
+    }
+  }
+  const result = withDefaults(map);
+  if (legalUpdated) result.__legal_updated_at = legalUpdated;
+  return result;
 });
