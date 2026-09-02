@@ -53,9 +53,13 @@ export function loadGa(): void {
 
   const w = window as unknown as { dataLayer: unknown[]; gtag: (...args: unknown[]) => void };
   w.dataLayer = w.dataLayer || [];
-  w.gtag = function gtag(...args: unknown[]) {
-    w.dataLayer.push(args);
-  };
+  // Snippet oficial de gtag: DEBE empujar el objeto `arguments` (no un array),
+  // o gtag.js no procesa los comandos y GA no registra datos.
+  function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    w.dataLayer.push(arguments);
+  }
+  w.gtag = gtag as unknown as (...args: unknown[]) => void;
   w.gtag("js", new Date());
   w.gtag("config", GA_ID, { send_page_view: false, anonymize_ip: true });
 }
